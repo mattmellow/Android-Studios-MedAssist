@@ -9,9 +9,9 @@
 
     <string name="menu_transform">Transform</string>
     <string name="menu_medication">Medication</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_exercise">Exercise</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_appointment">Appointments</string>
+    <string name="menu_appointment">Appointment</string>
 
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
