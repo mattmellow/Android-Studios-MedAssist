@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/nav_medication"
-        android:name="com.example.medassist.ui.Medication.MedicationFragment"
+        android:name="com.example.medassist.ui.medication.MedicationFragment"
         android:label="@string/menu_medication"
         tools:layout="@layout/fragment_medication" />
 

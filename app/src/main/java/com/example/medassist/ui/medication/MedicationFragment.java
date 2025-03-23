@@ -1,4 +1,4 @@
-package com.example.medassist.ui.Medication;
+package com.example.medassist.ui.medication;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
