@@ -28,4 +28,12 @@
         android:name="com.example.medassist.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_appointment"
+        android:name="com.example.medassist.ui.appointment.AppointmentFragment"
+        android:label="@string/menu_appointment"
+        tools:layout="@layout/fragment_appointment" />
+
+
 </navigation>
