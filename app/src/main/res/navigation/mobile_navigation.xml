@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_transform" />
 
     <fragment
-        android:id="@+id/nav_reflow"
-        android:name="com.example.medassist.ui.reflow.ReflowFragment"
-        android:label="@string/menu_reflow"
-        tools:layout="@layout/fragment_reflow" />
+        android:id="@+id/nav_medication"
+        android:name="com.example.medassist.ui.Medication.MedicationFragment"
+        android:label="@string/menu_medication"
+        tools:layout="@layout/fragment_medication" />
 
     <fragment
         android:id="@+id/nav_slideshow"

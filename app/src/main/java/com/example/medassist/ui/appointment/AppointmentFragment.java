@@ -11,11 +11,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.medassist.R;
-import com.example.medassist.databinding.FragmentSlideshowBinding;
-import com.example.medassist.ui.slideshow.SlideshowViewModel;
 
 public class AppointmentFragment extends Fragment {
 

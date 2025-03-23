@@ -1,16 +1,16 @@
-package com.example.medassist.ui.reflow;
+package com.example.medassist.ui.Medication;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class ReflowViewModel extends ViewModel {
+public class MedicationViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public ReflowViewModel() {
+    public MedicationViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is reflow fragment");
+        mText.setValue("This is medication fragment");
     }
 
     public LiveData<String> getText() {
