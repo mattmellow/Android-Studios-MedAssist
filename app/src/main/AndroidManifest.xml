@@ -13,7 +13,7 @@
         android:theme="@style/Theme.MedAssist"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:resizeableActivity="true"
@@ -25,6 +25,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MedAssist.NoActionBar" />
+        <activity
+            android:name=".ui.login.RegisterActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MedAssist.NoActionBar" />
+        <activity
+            android:name=".ui.login.ResetPasswordActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MedAssist.NoActionBar" />
+        <activity
+            android:name=".ui.login.VerifyActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MedAssist.NoActionBar" />
+
     </application>
 
 </manifest>
