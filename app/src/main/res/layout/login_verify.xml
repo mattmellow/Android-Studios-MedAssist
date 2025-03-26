@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.097" />
 
+
     <TextView
         android:id="@+id/VerifyTextViewEmail"
         android:layout_width="wrap_content"
@@ -30,16 +31,16 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.31" />
-
+        app:layout_constraintVertical_bias="0.323" />
 
     <TextView
         android:id="@+id/VerifyTextViewMaskedEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="z••••@g••••.com"
+        android:text="Enter Your Email"
         android:textAlignment="center"
         android:textColor="@color/darkblue"
         android:textSize="18sp"
@@ -48,17 +49,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.365" />
+        app:layout_constraintVertical_bias="0.388" />
 
     <EditText
-        android:id="@+id/editTextVerifyUsername"
-        android:layout_width="337dp"
+        android:id="@+id/editTextVerifyEmail"
+        android:layout_width="247dp"
         android:layout_height="48dp"
         android:background="@drawable/input_bg"
         android:drawablePadding="10dp"
         android:ems="10"
         android:gravity="center"
-        android:hint="Enter Code"
+        android:hint="Type Here"
         android:inputType="text"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
@@ -71,15 +72,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.477" />
-
+        app:layout_constraintVertical_bias="0.474" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/VerifyButtonVerify"
         android:layout_width="276dp"
         android:layout_height="48dp"
         android:background="@drawable/login"
-        android:text="Send Code"
+        android:text="Send Link to your email"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
@@ -88,7 +88,7 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.581" />
+        app:layout_constraintVertical_bias="0.633" />
 
     <TextView
         android:id="@+id/VerifyTextViewBacktoHomePage"

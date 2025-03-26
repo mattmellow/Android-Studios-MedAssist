@@ -1,8 +1,10 @@
 package com.example.medassist;
 
+
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
+
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -87,4 +89,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+
+
 }

@@ -41,16 +41,16 @@
         android:id="@+id/loginTextViewEmailUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email/Username"
+        android:text="Email"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.265"
+        app:layout_constraintHorizontal_bias="0.215"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.234" />
+        app:layout_constraintVertical_bias="0.231" />
 
     <EditText
         android:id="@+id/editTextLoginUsername"
@@ -133,7 +133,6 @@
     <TextView
         android:id="@+id/Reg"
         android:layout_width="wrap_content"
-
         android:text="Register for a new account"
         android:layout_height="48dp"
         android:textColor="@color/black"
