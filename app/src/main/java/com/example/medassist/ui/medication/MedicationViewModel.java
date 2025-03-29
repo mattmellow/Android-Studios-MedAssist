@@ -10,10 +10,13 @@ public class MedicationViewModel extends ViewModel {
 
     public MedicationViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is medication fragment");
     }
 
     public LiveData<String> getText() {
         return mText;
+    }
+
+    public void setText(String text) {
+        mText.setValue(text);
     }
 }
