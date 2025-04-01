@@ -15,6 +15,53 @@ public class Medication {
         this.frequency = frequency;
         this.time = time;
         this.sideEffects = sideEffects;
+    }
 
+    public String getName(){
+        return name;
+    }
+
+    public void setName(){
+        this.name=name;
+    }
+
+    public String getDosage(){
+        return dosage;
+    }
+
+    public void setDosage(){
+        this.dosage = dosage;
+    }
+
+    public String getFrequency(){
+        return frequency;
+    }
+
+    public void setFrequency(String frequency){
+        this.frequency = frequency;
+    }
+
+    public String getTime(){
+        return time;
+    }
+
+    public void setTime(String time){
+        this.time = time;
+    }
+
+    public String getSideEffects(){
+        return sideEffects;
+    }
+
+    public void setSideEffects(String sideEffects){
+        this.sideEffects = sideEffects;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

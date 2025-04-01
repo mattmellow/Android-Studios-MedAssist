@@ -133,7 +133,6 @@ public class WeeklyCalendarFragment extends Fragment {
                         }
                     }
                 }
-
                 // Load more dates when near the end
                 int totalItemCount = layoutManager.getItemCount();
                 int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();

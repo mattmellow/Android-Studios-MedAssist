@@ -18,6 +18,7 @@
             android:id="@+id/medicationIcon"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_gravity="center"
             android:src="@drawable/pill_icon" />
 
         <LinearLayout
@@ -31,6 +32,7 @@
                 android:id="@+id/medicationName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Medicine #1"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
@@ -39,6 +41,7 @@
                 android:id="@+id/medicationDosage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="1 pill, every 6hrs"
                 android:textSize="14sp"
                 android:textColor="#000000" />
 
@@ -46,27 +49,31 @@
                 android:id="@+id/medicationSideEffects"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Drowsy"
                 android:textSize="14sp"
                 android:textColor="#0066CC" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/clock_icon" />
-
-            <TextView
-                android:id="@+id/medicationTime"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/clock_icon" />
+
+                <TextView
+                    android:id="@+id/medicationTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="5dp"
+                    android:text="09:00pm"
+                    android:textSize="14sp"
+                    android:textColor="#000000" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
