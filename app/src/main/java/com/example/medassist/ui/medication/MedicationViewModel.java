@@ -44,4 +44,8 @@ public class MedicationViewModel extends ViewModel {
     public void setSelectedDate(LocalDate date) {
         selectedDate.setValue(date);
     }
+
+    public void clearMedications() {
+        medications.setValue(new ArrayList<>());
+    }
 }
