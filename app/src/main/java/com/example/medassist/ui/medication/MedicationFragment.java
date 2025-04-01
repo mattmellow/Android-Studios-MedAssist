@@ -78,6 +78,8 @@ public class MedicationFragment extends Fragment implements WeeklyCalendarFragme
         // Set up RecyclerView for medications
         setupMedicationList();
 
+        // Initialize selected date to today
+        medicationViewModel.setSelectedDate(LocalDate.now());
 
         return root;
 
@@ -223,6 +225,10 @@ public class MedicationFragment extends Fragment implements WeeklyCalendarFragme
 
         binding.currentMonthTextView.setText(month);
         binding.currentYearTextView.setText(String.valueOf(year));
+
+        medicationViewModel.setSelectedDate(date);
+
+
     }
 
     @Override
