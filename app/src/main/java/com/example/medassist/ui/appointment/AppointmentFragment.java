@@ -30,7 +30,7 @@ public class AppointmentFragment extends Fragment {
         View view = binding.getRoot();
 
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance("https://medassist-fdddd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
