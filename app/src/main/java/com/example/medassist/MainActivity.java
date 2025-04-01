@@ -4,6 +4,8 @@ package com.example.medassist;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Menu;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -19,6 +21,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.medassist.databinding.ActivityMainBinding;
+import androidx.appcompat.widget.PopupMenu;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +35,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
+        ImageView accountImageView = findViewById(R.id.accountImageView);
+        if (accountImageView != null) {
+            // Set click listener to show popup menu
+            accountImageView.setOnClickListener(view -> {
+                PopupMenu popup = new PopupMenu(MainActivity.this, accountImageView);
+                popup.getMenuInflater().inflate(R.menu.overflow, popup.getMenu());
+
+                popup.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == R.id.nav_settings) {
+                        NavController navController = Navigation.findNavController(MainActivity.this,
+                                R.id.nav_host_fragment_content_main);
+                        navController.navigate(R.id.nav_settings);
+                        return true;
+                    }
+                    return false;
+                });
+                popup.show();
+            });
+        }
+
         if (binding.appBarMain.fab != null) {
             binding.appBarMain.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).setAnchorView(R.id.fab).show());
@@ -58,20 +81,23 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
         }
+
+        // Hide the default title in the toolbar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        TextView pageTitleTextView = findViewById(R.id.pageTitleTextView);
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (pageTitleTextView != null) {
+                pageTitleTextView.setText(destination.getLabel());
+            }
+        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        boolean result = super.onCreateOptionsMenu(menu);
-        // Using findViewById because NavigationView exists in different layout files
-        // between w600dp and w1240dp
-        NavigationView navView = findViewById(R.id.nav_view);
-        if (navView == null) {
-            // The navigation drawer already has the items including the items in the overflow menu
-            // We only inflate the overflow menu if the navigation drawer isn't visible
-            getMenuInflater().inflate(R.menu.overflow, menu);
-        }
-        return result;
+        return false;
     }
 
     @Override

@@ -29,11 +29,9 @@ public class MedicationFragment extends Fragment implements WeeklyCalendarFragme
         binding = FragmentMedicationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Find the weekly calendar fragment using child fragment manager
         weeklyCalendarFragment = (WeeklyCalendarFragment)
                 getChildFragmentManager().findFragmentById(R.id.weeklyCalendarFragment);
 
-        // If not found, create and add the fragment
         if (weeklyCalendarFragment == null) {
             weeklyCalendarFragment = new WeeklyCalendarFragment();
             getChildFragmentManager().beginTransaction()
@@ -41,21 +39,16 @@ public class MedicationFragment extends Fragment implements WeeklyCalendarFragme
                     .commit();
         }
 
-        // Set the date selection listener
         weeklyCalendarFragment.setOnDateSelectedListener(this);
-
-        // Set month change listener
         weeklyCalendarFragment.setOnMonthChangeListener((month, year) -> {
             binding.currentMonthTextView.setText(month);
             binding.currentYearTextView.setText(String.valueOf(year));
         });
 
-        // Set the initial month and year to current
         LocalDate currentDate = LocalDate.now();
         String currentMonth = currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         int currentYear = currentDate.getYear();
 
-        // Update separate TextViews for month and year
         binding.currentMonthTextView.setText(currentMonth);
         binding.currentYearTextView.setText(String.valueOf(currentYear));
 
@@ -64,8 +57,7 @@ public class MedicationFragment extends Fragment implements WeeklyCalendarFragme
 
     @Override
     public void onDateSelected(LocalDate date) {
-        // Optional: Add any specific actions when a date is selected
-        // For now, we're just updating the month and year
+
         String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         int year = date.getYear();
 
