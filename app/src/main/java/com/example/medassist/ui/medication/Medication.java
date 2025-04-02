@@ -82,4 +82,17 @@ public class Medication {
     public void setDate(LocalDate date){
         this.date=date;
     }
+
+    @Override
+    public String toString() {
+        return "Medication{" +
+                "medicationId = " + medicationId +
+                ", medicationName = " + medicationName + '\n' +
+                ", dosage = " + dosage + '\n' +
+                ", frequency = " + frequency + '\n' +
+                ", sideEffects = " + sideEffects + '\n' +
+                ", time = " + time + '\n' +
+                ", date = " + date + '\n' +
+                '}';
+    }
 }
