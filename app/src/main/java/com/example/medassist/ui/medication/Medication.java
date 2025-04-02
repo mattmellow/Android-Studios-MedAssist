@@ -3,76 +3,82 @@ package com.example.medassist.ui.medication;
 import java.time.LocalDate;
 
 public class Medication {
-    private String name;
+    private long medicationId; //UUID for firestore
+    private String medicationName; //Medication Name
+
+    //*******************************************************************************************
+    // For the following, we broke down intake instructions into 3 parts:                       *
+    // (a) Dosage: The amount needed to be taken per intake (e.g. how many pills? how much ml?) *
+    // (b) Frequency: The number of intakes per day (e.g. 2 times per day)                      *
+    // (c) Side effects: The side effects that the user should take note of, if any             *
+    //*******************************************************************************************
     private String dosage;
     private String frequency;
-    private String time;
     private String sideEffects;
-    private LocalDate date;
-    long id;
 
-    public Medication(long id, String name, String dosage, String frequency, String time, String sideEffects ){
-        this.id = id;
-        this.name = name;
+
+    private String time; // Format is in "HH:mm" (e.g. "08:00")
+    private LocalDate date;
+
+    //***************
+    // Constructors *
+    //***************
+    public Medication(long medicationId, String medicationName, String dosage,
+                      String frequency, String sideEffects, String time, LocalDate date ){
+        this.medicationId = medicationId;
+        this.medicationName = medicationName;
         this.dosage = dosage;
         this.frequency = frequency;
-        this.time = time;
         this.sideEffects = sideEffects;
+        this.time = time;
         this.date = date;
     }
 
-    public String getName(){
-        return name;
-    }
+    //*********************************
+    // Empty Constructor for Firebase *
+    //*********************************
+    public Medication(){}
 
-    public void setName(){
-        this.name=name;
-    }
+    //**********************
+    // Getters and Setters *
+    //**********************
+    public long getMedicationId() { return medicationId; }
+    public void setMedicationId(long medicationId) { this.medicationId = medicationId; }
+
+    public String getMedicationName(){ return medicationName; }
+    public void setMedicationName(String medicationName) { this.medicationName = medicationName; }
 
     public String getDosage(){
         return dosage;
     }
-
-    public void setDosage(){
+    public void setDosage(String dosage){
         this.dosage = dosage;
     }
 
     public String getFrequency(){
         return frequency;
     }
-
     public void setFrequency(String frequency){
         this.frequency = frequency;
-    }
-
-    public String getTime(){
-        return time;
-    }
-
-    public void setTime(String time){
-        this.time = time;
     }
 
     public String getSideEffects(){
         return sideEffects;
     }
-
     public void setSideEffects(String sideEffects){
         this.sideEffects = sideEffects;
     }
 
-    public long getId() {
-        return id;
+    public String getTime(){
+        return time;
     }
-
-    public void setId(long id) {
-        this.id = id;
+    public void setTime(String time){
+        this.time = time;
     }
 
     public LocalDate getDate(){
         return date;
     }
-
     public void setDate(LocalDate date){
         this.date=date;
     }
