@@ -55,6 +55,7 @@ public class MedicationViewModel extends AndroidViewModel {
         repository.saveMedication(medication, new MedicationRepository.OnOperationCompleteListener() {
             @Override
             public void onSuccess() {
+                NotificationHelper.scheduleMedicationReminder(getApplication(), medication);
                 // The medication will be loaded through the ValueEventListener in the repository
                 isLoading.setValue(false);
             }
@@ -73,6 +74,7 @@ public class MedicationViewModel extends AndroidViewModel {
         repository.deleteMedication(medication, new MedicationRepository.OnOperationCompleteListener() {
             @Override
             public void onSuccess() {
+                NotificationHelper.cancelMedicationReminder(getApplication(), medication.getId());
                 // The medication will be removed through the ValueEventListener in the repository
                 isLoading.setValue(false);
             }
