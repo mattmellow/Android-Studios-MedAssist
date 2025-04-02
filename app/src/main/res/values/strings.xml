@@ -25,4 +25,22 @@
     </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- strings used in activity_home.xml -->
+    <!-- Medication Card -->
+    <string name="today_medications">Today\'s Medications</string>
+    <string name="medicine_1">Medicine #1</string>
+    <string name="medicine_2">Medicine #2</string>
+    <string name="add_medication">+ Add Medication</string>
+
+    <!-- Appointment Card -->
+    <string name="upcoming">Upcoming</string>
+    <string name="tuesday">TUESDAY</string>
+    <string name="date_18">18</string>
+
+    <!-- Content Descriptions -->
+    <string name="profile_icon_desc">Profile</string>
+    <string name="logo_desc">MedAssist Logo</string>
+    <string name="add_button_desc">Add Medication</string>
 </resources>
