@@ -13,6 +13,21 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_appointment">Appointment</string>
 
+    <string-array name="duration_units">
+        <item>days</item>
+        <item>weeks</item>
+        <item>months</item>
+    </string-array>
+
+    <string-array name="dose_units">
+        <item>pill(s)</item>
+        <item>mg</item>
+        <item>ml</item>
+        <item>tbsp</item>
+        <item>tsp</item>
+    </string-array>
+
+
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
         typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever
@@ -24,5 +39,4 @@
         item
     </string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

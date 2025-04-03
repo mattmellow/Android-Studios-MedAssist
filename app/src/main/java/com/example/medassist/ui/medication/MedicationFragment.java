@@ -75,16 +75,18 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void showAddMedicationDialog() {
-        DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, time, sideEffects) -> {
+        DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation) -> {
             // Generate unique ID
             long id = System.currentTimeMillis();
 
-            // Create new medication
-            Medication medication = new Medication(id, name, dosage, frequency, time, sideEffects);
+// Create new medication with the list of times
+            Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects);
 
-            // Set the date to the currently selected date
+// Set the food relation
+            medication.setFoodRelation(foodRelation);
+
+// Set the date
             medication.setDate(datePickerFragment.getSelectedDate());
-
             // Add to view model
             medicationViewModel.addMedication(medication);
         });
@@ -128,6 +130,21 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
                 // Show delete option
                 showDeleteConfirmationDialog(medication);
             }
+        });
+    }
+
+    private void showEditMedicationDialog(Medication medication) {
+        DialogHelper.showEditMedicationDialog(this, medication, (name, dosage, frequency, times, sideEffects, foodRelation) -> {
+            // Update medication with new values
+            medication.setName(name);
+            medication.setDosage(dosage);
+            medication.setFrequency(frequency);
+            medication.setNotificationTimes(times);
+            medication.setSideEffects(sideEffects);
+            medication.setFoodRelation(foodRelation);
+
+            // Update in view model
+            medicationViewModel.updateMedication(medication);
         });
     }
 

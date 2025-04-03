@@ -1,48 +1,302 @@
-
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/medicationNameEditText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Medication Name"
-        android:inputType="text"
-        android:layout_marginBottom="8dp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <EditText
-        android:id="@+id/medicationDosageEditText"
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Dosage (e.g., 1 pill, 5ml)"
-        android:inputType="text"
-        android:layout_marginBottom="8dp" />
+        android:orientation="horizontal"
+        android:padding="10dp">
+            <Button
+            android:id="@+id/backButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/circular_button"
+            android:text="❮"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:gravity="center"/>
 
-    <EditText
-        android:id="@+id/medicationFrequencyEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Frequency (e.g., every 6hrs, 3 times a day)"
-        android:inputType="text"
-        android:layout_marginBottom="8dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Medication"
+                android:textSize="25sp"
+                android:textColor="@color/black"
+                android:layout_marginStart="20dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="4dp"/>
 
-    <EditText
-        android:id="@+id/medicationTimeEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Time (e.g., 09:00pm)"
-        android:inputType="text"
-        android:layout_marginBottom="8dp" />
+        </LinearLayout>
 
-    <EditText
-        android:id="@+id/medicationSideEffectsEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Side Effects (optional)"
-        android:inputType="text" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pills name"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/medicationNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Medication Name"
+            android:background="@drawable/input_bg"
+            android:textColor="@color/darkgrey"
+            android:textColorHint="@color/darkgrey"
+            android:inputType="text"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dosage Per Intake"
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Repeat Across"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="4dp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:background="@drawable/input_bg"
+                android:padding="8dp"
+                android:layout_marginEnd="8dp">
+
+                <EditText
+                    android:id="@+id/medicationAmountEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="2"
+                    android:textSize="15sp"
+                    android:inputType="number"
+                    android:background="@null"
+                    android:gravity="end"/>
+
+                <Spinner
+                    android:id="@+id/doseUnitSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginStart="4dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:background="@drawable/input_bg"
+                android:padding="8dp"
+                android:layout_marginEnd="8dp">
+
+                <EditText
+                    android:id="@+id/durationEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="30"
+                    android:textSize="15sp"
+                    android:inputType="number"
+                    android:background="@null"
+                    android:gravity="end"/>
+
+                <Spinner
+                    android:id="@+id/durationUnitSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginStart="4dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Food &amp; Pills"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <RadioGroup
+                android:id="@+id/foodRelationRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/beforeMealRadioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:button="@null"
+                    android:background="@drawable/radio_selector"
+                    android:gravity="center"
+                    android:text="Before"
+                    android:textAlignment="center"/>
+
+                <RadioButton
+                    android:id="@+id/afterMealRadioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:button="@null"
+                    android:background="@drawable/radio_selector"
+                    android:gravity="center"
+                    android:text="After"
+                    android:textAlignment="center"/>
+
+                <RadioButton
+                    android:id="@+id/naMealRadioButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:button="@null"
+                    android:background="@drawable/radio_selector"
+                    android:gravity="center"
+                    android:text="N.A"
+                    android:textAlignment="center"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Frequency"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/frequencySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notification"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <LinearLayout
+            android:id="@+id/notificationTimesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <!-- Time picker container -->
+            <LinearLayout
+                android:id="@+id/timePickerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Time picker item template -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/input_bg"
+                    android:padding="12dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/timePickerText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Enter time"
+                        android:textSize="16sp"/>
+
+                    <ImageButton
+                        android:id="@+id/selectTimeButton"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/clock_icon"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Select time"/>
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Side Effects (optional)"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"/>
+
+        <EditText
+            android:id="@+id/medicationSideEffectsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Side Effects"
+            android:inputType="textMultiLine"
+            android:minLines="1"
+            android:background="@drawable/input_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/doneButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@color/lightgrey"
+            android:background="@drawable/input_bg"
+            android:padding="12dp"/>
+
+    </LinearLayout>
+</ScrollView>

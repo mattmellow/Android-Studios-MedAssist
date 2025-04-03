@@ -39,4 +39,18 @@ public class DialogHelper {
         dialog.setOnMedicationAddedListener(onMedicationAdded);
         dialog.show(fragment.getChildFragmentManager(), "AddMedicationDialog");
     }
+
+    /**
+     * Show the edit medication dialog
+     *
+     * @param fragment The parent fragment
+     * @param medication The medication to edit
+     * @param onMedicationEdited Callback for when a medication is edited
+     */
+    public static void showEditMedicationDialog(MedicationFragment fragment, Medication medication, MedicationFormDialog.OnMedicationAddedListener onMedicationEdited) {
+        MedicationFormDialog dialog = new MedicationFormDialog();
+        dialog.setMedication(medication); // You'll need to implement this method in MedicationFormDialog
+        dialog.setOnMedicationAddedListener(onMedicationEdited);
+        dialog.show(fragment.getChildFragmentManager(), "EditMedicationDialog");
+    }
 }

@@ -1,14 +1,21 @@
 <LinearLayout
     android:id="@+id/dayContainer"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="100dp"
-    android:layout_height="150dp"
+    android:layout_width="75dp"
+    android:layout_height="100dp"
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/roundedcorners"
     android:layout_marginHorizontal="5dp"
     >
-
+    <TextView
+        android:id="@+id/dayOfWeekTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MON"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:textColor="@color/black"/>
     <TextView
         android:id="@+id/dateOfMonthTextView"
         android:layout_width="wrap_content"
@@ -17,16 +24,9 @@
         android:text="20"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="35sp"
-        android:paddingBottom="10dp"
+        android:textSize="23sp"
+        android:paddingTop="8dp"
         />
 
-    <TextView
-        android:id="@+id/dayOfWeekTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MON"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textColor="@color/black"/>
+
 </LinearLayout>

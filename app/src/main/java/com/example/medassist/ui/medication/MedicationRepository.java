@@ -63,10 +63,11 @@ public class MedicationRepository {
         medData.put("name", medication.getName());
         medData.put("dosage", medication.getDosage());
         medData.put("frequency", medication.getFrequency());
-        medData.put("time", medication.getTime());
+        medData.put("notificationTimes", medication.getNotificationTimes());
         medData.put("sideEffects", medication.getSideEffects());
         medData.put("date", dateStr);
         medData.put("id", medication.getId());
+        medData.put("foodRelation", medication.getFoodRelation());
 
         // Save to Firebase - using structure: medications/userId/date/medicationId
         String medId = String.valueOf(medication.getId());
@@ -75,9 +76,6 @@ public class MedicationRepository {
                 .addOnFailureListener(e -> listener.onError(e.getMessage()));
     }
 
-    /**
-     * Load all medications for a specific date
-     */
     public void loadMedicationsForDate(LocalDate date, OnMedicationsLoadedListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -91,6 +89,7 @@ public class MedicationRepository {
 
         mDatabase.child("medications").child(userId).child(dateStr)
                 .addValueEventListener(new ValueEventListener() {
+                    @SuppressWarnings("unchecked")
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         List<Medication> medicationList = new ArrayList<>();
@@ -99,13 +98,34 @@ public class MedicationRepository {
                             String name = medSnapshot.child("name").getValue(String.class);
                             String dosage = medSnapshot.child("dosage").getValue(String.class);
                             String frequency = medSnapshot.child("frequency").getValue(String.class);
-                            String time = medSnapshot.child("time").getValue(String.class);
                             String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
+                            String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
                             Long id = medSnapshot.child("id").getValue(Long.class);
 
-                            if (name != null && dosage != null && frequency != null && time != null && id != null) {
-                                Medication medication = new Medication(id, name, dosage, frequency, time, sideEffects);
+                            // Try to get notification times list
+                            List<String> notificationTimes = new ArrayList<>();
+                            if (medSnapshot.child("notificationTimes").exists()) {
+                                // This handles the case where notificationTimes is properly stored as a list
+                                for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
+                                    String time = timeSnapshot.getValue(String.class);
+                                    if (time != null) {
+                                        notificationTimes.add(time);
+                                    }
+                                }
+                            } else {
+                                // Legacy support - get single time value
+                                String time = medSnapshot.child("time").getValue(String.class);
+                                if (time != null && !time.isEmpty()) {
+                                    notificationTimes.add(time);
+                                }
+                            }
+
+                            if (name != null && dosage != null && frequency != null && id != null) {
+                                Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects);
                                 medication.setDate(date);
+                                if (foodRelation != null) {
+                                    medication.setFoodRelation(foodRelation);
+                                }
                                 medicationList.add(medication);
                             }
                         }
