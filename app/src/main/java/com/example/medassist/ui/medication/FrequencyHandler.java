@@ -76,19 +76,13 @@ public class FrequencyHandler {
                         addTimePicker("8:00 AM");
                         break;
                     case 1: // Twice daily
-                        addTimePicker("8:00 AM");
-                        addTimePicker("8:00 PM");
+                        addTimePickersWithSpacing("8:00 AM", 2); // Will add 8:00 AM and 8:00 PM
                         break;
                     case 2: // Three times daily
-                        addTimePicker("8:00 AM");
-                        addTimePicker("2:00 PM");
-                        addTimePicker("8:00 PM");
+                        addTimePickersWithSpacing("8:00 AM", 3); // Will add 8:00 AM, 4:00 PM, 12:00 AM
                         break;
                     case 3: // Four times daily
-                        addTimePicker("8:00 AM");
-                        addTimePicker("12:00 PM");
-                        addTimePicker("4:00 PM");
-                        addTimePicker("8:00 PM");
+                        addTimePickersWithSpacing("8:00 AM", 4); // Will add 8:00 AM, 2:00 PM, 8:00 PM, 2:00 AM
                         break;
                     case 4: // Every morning
                         addTimePicker("8:00 AM");
@@ -172,6 +166,32 @@ public class FrequencyHandler {
         });
 
         timePickerContainer.addView(timePickerView);
+    }
+
+    private void addTimePickersWithSpacing(String baseTime, int count) {
+        try {
+            // Parse base time
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+            LocalTime time = LocalTime.parse(baseTime, formatter);
+
+            // Calculate spacing in hours (24 hours / count)
+            int hourSpacing = 24 / count;
+
+            // Add initial time
+            addTimePicker(time.format(timeFormatter));
+
+            // Add subsequent times with appropriate spacing
+            for (int i = 1; i < count; i++) {
+                time = time.plusHours(hourSpacing);
+                addTimePicker(time.format(timeFormatter));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback - add default times
+            for (int i = 0; i < count; i++) {
+                addTimePicker("8:00 AM");
+            }
+        }
     }
 
     private void addAddTimeButton() {

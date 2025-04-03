@@ -8,10 +8,12 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -60,7 +62,9 @@ public class MedicationFormDialog extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.add_medication, null);
 
+
         // Initialize fields
+        foodRelationRadioGroup = view.findViewById(R.id.foodRelationRadioGroup);
         nameEditText = view.findViewById(R.id.medicationNameEditText);
         medicationAmountEditText = view.findViewById(R.id.medicationAmountEditText);
         doseUnitSpinner = view.findViewById(R.id.doseUnitSpinner);
@@ -69,8 +73,9 @@ public class MedicationFormDialog extends DialogFragment {
         frequencySpinner = view.findViewById(R.id.frequencySpinner);
         sideEffectsEditText = view.findViewById(R.id.medicationSideEffectsEditText);
         timePickerContainer = view.findViewById(R.id.timePickerContainer);
-        foodRelationRadioGroup = view.findViewById(R.id.foodRelationRadioGroup);
         selectedTimes = new ArrayList<>();
+
+        setupRadioButtonListeners();
 
         // Set up the initial time picker
         setupInitialTimePicker();
@@ -79,10 +84,72 @@ public class MedicationFormDialog extends DialogFragment {
         Button doneButton = view.findViewById(R.id.doneButton);
         doneButton.setOnClickListener(v -> submitForm());
 
-        builder.setView(view)
-                .setTitle("Add Medication");
+        Button backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> dismiss());
+
+        builder.setView(view);
+
+        // Set up dose unit spinner
+        ArrayAdapter<CharSequence> doseUnitAdapter = ArrayAdapter.createFromResource(
+                getContext(), R.array.dose_units, android.R.layout.simple_spinner_item);
+        doseUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        doseUnitSpinner.setAdapter(doseUnitAdapter);
+
+// Set up duration unit spinner
+        ArrayAdapter<CharSequence> durationUnitAdapter = ArrayAdapter.createFromResource(
+                getContext(), R.array.duration_units, android.R.layout.simple_spinner_item);
+        durationUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        durationUnitSpinner.setAdapter(durationUnitAdapter);
+
+// Set up frequency spinner
+        String[] frequencies = {"Once daily", "Twice daily", "Three times daily",
+                "Four times daily", "Every morning", "Every night",
+                "Every other day", "Weekly", "As needed", "Custom..."};
+        ArrayAdapter<String> frequencyAdapter = new ArrayAdapter<>(
+                getContext(), android.R.layout.simple_spinner_item, frequencies);
+        frequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        frequencySpinner.setAdapter(frequencyAdapter);
 
         return builder.create();
+    }
+    private void setupRadioButtonListeners() {
+        // Get references to the radio buttons
+        RadioButton beforeRadio = foodRelationRadioGroup.findViewById(R.id.beforeMealRadioButton);
+        RadioButton afterRadio = foodRelationRadioGroup.findViewById(R.id.afterMealRadioButton);
+        RadioButton naRadio = foodRelationRadioGroup.findViewById(R.id.naMealRadioButton);
+
+        // List of all radio buttons for easy iteration
+        RadioButton[] radioButtons = {beforeRadio, afterRadio, naRadio};
+
+        // Set initial state (in case of editing a medication)
+        updateRadioButtonStyles();
+
+        // Add listener to change colors when selection changes
+        foodRelationRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            updateRadioButtonStyles();
+        });
+    }
+
+    private void updateRadioButtonStyles() {
+        RadioButton beforeRadio = foodRelationRadioGroup.findViewById(R.id.beforeMealRadioButton);
+        RadioButton afterRadio = foodRelationRadioGroup.findViewById(R.id.afterMealRadioButton);
+        RadioButton naRadio = foodRelationRadioGroup.findViewById(R.id.naMealRadioButton);
+
+        // Update each radio button's text color based on selection state
+        updateRadioButtonStyle(beforeRadio);
+        updateRadioButtonStyle(afterRadio);
+        updateRadioButtonStyle(naRadio);
+    }
+
+    private void updateRadioButtonStyle(RadioButton radioButton) {
+        if (radioButton.isChecked()) {
+            radioButton.setTextColor(getResources().getColor(android.R.color.white));
+            // You could also change the background here if you want to do it programmatically
+            // radioButton.setBackgroundResource(R.drawable.selected_radio_background);
+        } else {
+            radioButton.setTextColor(getResources().getColor(android.R.color.black));
+            // radioButton.setBackgroundResource(R.drawable.unselected_radio_background);
+        }
     }
 
     private void submitForm() {

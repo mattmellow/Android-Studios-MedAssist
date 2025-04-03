@@ -10,6 +10,33 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+            <Button
+            android:id="@+id/backButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/circular_button"
+            android:text="❮"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Medication"
+                android:textSize="25sp"
+                android:textColor="@color/black"
+                android:layout_marginStart="20dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="4dp"/>
+
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,13 +55,29 @@
             android:inputType="text"
             android:padding="12dp"
             android:layout_marginBottom="16dp" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Dosage &amp; How long?"
-            android:textSize="14sp"
-            android:layout_marginBottom="4dp"/>
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dosage Per Intake"
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Repeat Across"
+                android:textSize="14sp"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="4dp"/>
+
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -53,19 +96,23 @@
 
                 <EditText
                     android:id="@+id/medicationAmountEditText"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:hint="2"
+                    android:textSize="15sp"
                     android:inputType="number"
                     android:background="@null"
                     android:gravity="end"/>
 
                 <Spinner
                     android:id="@+id/doseUnitSpinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_weight="3"
+                    android:layout_marginStart="4dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -74,23 +121,28 @@
                 android:layout_weight="1"
                 android:orientation="horizontal"
                 android:background="@drawable/input_bg"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:layout_marginEnd="8dp">
 
                 <EditText
                     android:id="@+id/durationEditText"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:hint="30"
+                    android:textSize="15sp"
                     android:inputType="number"
                     android:background="@null"
                     android:gravity="end"/>
 
                 <Spinner
                     android:id="@+id/durationUnitSpinner"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_weight="3"
+                    android:layout_marginStart="4dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -116,10 +168,11 @@
                 <RadioButton
                     android:id="@+id/beforeMealRadioButton"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
                     android:button="@null"
-                    android:background="@drawable/input_bg"
+                    android:background="@drawable/radio_selector"
                     android:gravity="center"
                     android:text="Before"
                     android:textAlignment="center"/>
@@ -127,10 +180,12 @@
                 <RadioButton
                     android:id="@+id/afterMealRadioButton"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
                     android:button="@null"
-                    android:background="@drawable/input_bg"
+                    android:background="@drawable/radio_selector"
                     android:gravity="center"
                     android:text="After"
                     android:textAlignment="center"/>
@@ -138,14 +193,14 @@
                 <RadioButton
                     android:id="@+id/naMealRadioButton"
                     android:layout_width="0dp"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginStart="4dp"
                     android:button="@null"
-                    android:background="@drawable/input_bg"
+                    android:background="@drawable/radio_selector"
                     android:gravity="center"
-                    android:text="N.a"
+                    android:text="N.A"
                     android:textAlignment="center"/>
-
             </RadioGroup>
         </LinearLayout>
 
@@ -228,7 +283,7 @@
             android:layout_height="wrap_content"
             android:hint="Side Effects"
             android:inputType="textMultiLine"
-            android:minLines="2"
+            android:minLines="1"
             android:background="@drawable/input_bg"
             android:padding="12dp"
             android:layout_marginBottom="16dp" />
@@ -239,6 +294,7 @@
             android:layout_height="wrap_content"
             android:text="Done"
             android:textColor="#FFFFFF"
+            android:backgroundTint="@color/lightgrey"
             android:background="@drawable/input_bg"
             android:padding="12dp"/>
 

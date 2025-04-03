@@ -19,6 +19,15 @@
         <item>months</item>
     </string-array>
 
+    <string-array name="dose_units">
+        <item>pill(s)</item>
+        <item>mg</item>
+        <item>ml</item>
+        <item>tbsp</item>
+        <item>tsp</item>
+    </string-array>
+
+
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
         typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever

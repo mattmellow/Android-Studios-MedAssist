@@ -1,6 +1,7 @@
 package com.example.medassist.ui.medication;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,5 +117,47 @@ public class Medication {
 
     public void setFoodRelation(String foodRelation) {
         this.foodRelation = foodRelation;
+    }
+
+    public boolean shouldAppearOnDate(LocalDate targetDate) {
+        // Base case: If this is the medication's original date
+        if (this.date != null && this.date.equals(targetDate)) {
+            return true;
+        }
+
+        // If no original date, can't determine recurrence
+        if (this.date == null) {
+            return false;
+        }
+
+        // Handle different frequencies
+        switch (this.frequency) {
+            case "Once daily":
+            case "Twice daily":
+            case "Three times daily":
+            case "Four times daily":
+            case "Every morning":
+            case "Every night":
+                // These appear every day
+                return !targetDate.isBefore(this.date);
+
+            case "Every other day":
+                // Calculate days between dates
+                long daysBetween = ChronoUnit.DAYS.between(this.date, targetDate);
+                return daysBetween >= 0 && daysBetween % 2 == 0;
+
+            case "Weekly":
+                // Same day of week
+                return !targetDate.isBefore(this.date) &&
+                        targetDate.getDayOfWeek() == this.date.getDayOfWeek();
+
+            case "As needed":
+                // Only show on original date
+                return this.date.equals(targetDate);
+
+            default:
+                // For custom frequencies, only show on original date
+                return this.date.equals(targetDate);
+        }
     }
 }

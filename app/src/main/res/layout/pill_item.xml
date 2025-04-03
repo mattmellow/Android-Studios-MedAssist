@@ -45,17 +45,33 @@
                 android:textSize="14sp"
                 android:textColor="#000000" />
 
-            <TextView
-                android:id="@+id/medicationSideEffects"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Drowsy"
-                android:textSize="14sp"
-                android:textColor="#0066CC" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/medicationFoodRelation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Before meals"
+                    android:textSize="14sp"
+                    android:textColor="#FF6B6B" />
+
+                <TextView
+                    android:id="@+id/medicationSideEffects"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Drowsy"
+                    android:textSize="14sp"
+                    android:textColor="#0066CC" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp">
 
                 <ImageView
                     android:layout_width="20dp"
