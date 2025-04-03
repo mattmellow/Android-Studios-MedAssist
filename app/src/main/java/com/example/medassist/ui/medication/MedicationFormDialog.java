@@ -6,20 +6,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
 import com.example.medassist.R;
 
-public class AddMedicationDialog extends DialogFragment {
+public class MedicationFormDialog extends DialogFragment {
     private EditText nameEditText;
     private EditText dosageEditText;
     private EditText frequencyEditText;
     private EditText timeEditText;
     private EditText sideEffectsEditText;
-
     private OnMedicationAddedListener listener;
 
     public interface OnMedicationAddedListener {
@@ -61,7 +58,7 @@ public class AddMedicationDialog extends DialogFragment {
                     }
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> {
-                    AddMedicationDialog.this.getDialog().cancel();
+                    MedicationFormDialog.this.getDialog().cancel();
                 });
 
         return builder.create();

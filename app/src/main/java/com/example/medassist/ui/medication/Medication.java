@@ -26,7 +26,7 @@ public class Medication {
     }
 
     public void setName(){
-        this.name=name;
+        this.name = name;
     }
 
     public String getDosage(){
