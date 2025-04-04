@@ -87,6 +87,26 @@ public class MedicationViewModel extends AndroidViewModel {
         });
     }
 
+    public void updateMedication(Medication medication) {
+        isLoading.setValue(true);
+
+        repository.saveMedication(medication, new MedicationRepository.OnOperationCompleteListener() {
+            @Override
+            public void onSuccess() {
+                // Cancel the old notification and schedule a new one
+                NotificationHelper.cancelMedicationReminder(getApplication(), medication.getId());
+                NotificationHelper.scheduleMedicationReminder(getApplication(), medication);
+                // The updated medication will be loaded through the ValueEventListener in the repository
+                isLoading.setValue(false);
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+                errorMessage.setValue(errorMsg);
+                isLoading.setValue(false);
+            }
+        });
+    }
     private void loadMedicationsForDate(LocalDate date) {
         isLoading.setValue(true);
 
@@ -104,4 +124,5 @@ public class MedicationViewModel extends AndroidViewModel {
             }
         });
     }
+
 }

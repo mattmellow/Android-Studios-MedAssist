@@ -1,8 +1,11 @@
 package com.example.medassist.ui.medication;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,12 +44,44 @@ public class MedicationAdapter extends RecyclerView.Adapter<MedicationAdapter.Me
     public void onBindViewHolder(@NonNull MedicationViewHolder holder, int position) {
         Medication medication = medications.get(position);
 
-        // Set text for each field
         holder.medicationName.setText(medication.getName());
         holder.medicationDosage.setText(medication.getDosage() + ", " + medication.getFrequency());
-        holder.medicationTime.setText(medication.getTime());
 
-        // Handle side effects (may be optional)
+        holder.timingsContainer.removeAllViews();
+
+        for (String time : medication.getNotificationTimes()) {
+            // Create a horizontal layout for each time entry
+            LinearLayout timeEntry = new LinearLayout(holder.itemView.getContext());
+            timeEntry.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            timeEntry.setOrientation(LinearLayout.HORIZONTAL);
+            timeEntry.setGravity(Gravity.CENTER_VERTICAL);
+            timeEntry.setPadding(0, 4, 16, 4); // Add some padding between time entries
+
+            // Add clock icon
+            ImageView clockIcon = new ImageView(holder.itemView.getContext());
+            LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(50, 50);
+            clockIcon.setLayoutParams(iconParams);
+            clockIcon.setImageResource(R.drawable.clock_icon);
+            timeEntry.addView(clockIcon);
+
+            // Add time text
+            TextView timeView = new TextView(holder.itemView.getContext());
+            LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            textParams.setMarginStart(4); // Space between icon and text
+            timeView.setLayoutParams(textParams);
+            timeView.setText(time);
+            timeView.setTextSize(14);
+            timeView.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.black));
+            timeEntry.addView(timeView);
+
+            // Add the time entry to the container
+            holder.timingsContainer.addView(timeEntry);
+        }
+
         if (medication.getSideEffects() != null && !medication.getSideEffects().isEmpty()) {
             holder.medicationSideEffects.setText(medication.getSideEffects());
             holder.medicationSideEffects.setVisibility(View.VISIBLE);
@@ -54,7 +89,13 @@ public class MedicationAdapter extends RecyclerView.Adapter<MedicationAdapter.Me
             holder.medicationSideEffects.setVisibility(View.GONE);
         }
 
-        // Set click listeners
+        if (medication.getFoodRelation() != null && !medication.getFoodRelation().isEmpty()) {
+            holder.medicationFoodRelation.setText(medication.getFoodRelation());
+            holder.medicationFoodRelation.setVisibility(View.VISIBLE);
+        } else {
+            holder.medicationFoodRelation.setVisibility(View.GONE);
+        }
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onMedicationClick(medication);
@@ -105,15 +146,17 @@ public class MedicationAdapter extends RecyclerView.Adapter<MedicationAdapter.Me
     static class MedicationViewHolder extends RecyclerView.ViewHolder {
         TextView medicationName;
         TextView medicationDosage;
-        TextView medicationTime;
+        TextView medicationFoodRelation;
         TextView medicationSideEffects;
+        ViewGroup timingsContainer;
 
         public MedicationViewHolder(@NonNull View itemView) {
             super(itemView);
             medicationName = itemView.findViewById(R.id.medicationName);
             medicationDosage = itemView.findViewById(R.id.medicationDosage);
-            medicationTime = itemView.findViewById(R.id.medicationTime);
+            medicationFoodRelation = itemView.findViewById(R.id.medicationFoodRelation);
             medicationSideEffects = itemView.findViewById(R.id.medicationSideEffects);
+            timingsContainer = itemView.findViewById(R.id.timingsContainer);
         }
     }
 }

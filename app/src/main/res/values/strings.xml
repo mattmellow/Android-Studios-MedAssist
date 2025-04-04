@@ -50,4 +50,17 @@
     <string name="progress_number">60%</string>
     <string name="brisk_walking">Brisk Walking 3km</string>
     <string name="swimming">Swimming</string>
+    <string-array name="duration_units">
+        <item>days</item>
+        <item>weeks</item>
+        <item>months</item>
+    </string-array>
+
+    <string-array name="dose_units">
+        <item>pill(s)</item>
+        <item>mg</item>
+        <item>ml</item>
+        <item>tbsp</item>
+        <item>tsp</item>
+    </string-array>
 </resources>
