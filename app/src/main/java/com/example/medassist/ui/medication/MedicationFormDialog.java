@@ -1,7 +1,5 @@
 package com.example.medassist.ui.medication;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +11,6 @@ import android.widget.Toast;
 
 import com.example.medassist.R;
 import com.example.medassist.ui.reminders.ReminderFormDialog;
-import android.widget.TextView;  // Add this import at the top
-
 
 import java.util.List;
 
@@ -96,12 +92,6 @@ public class MedicationFormDialog extends ReminderFormDialog {
 
         // Populate notification times if available
         List<String> times = medication.getNotificationTimes();
-        if (times != null && !times.isEmpty()) {
-            for (String time : times) {
-                // Add each time picker dynamically
-                addNewTimePicker(time);
-            }
-        }
     }
 
     // Method to handle the population of spinners based on string value
@@ -114,22 +104,6 @@ public class MedicationFormDialog extends ReminderFormDialog {
                 break;
             }
         }
-    }
-
-    // Method to add a new time picker with a specific time
-    private void addNewTimePicker(String time) {
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View newTimePickerView = inflater.inflate(R.layout.time_picker_item, null);
-        TextView timeText = newTimePickerView.findViewById(R.id.timePickerText);
-        timeText.setText(time);
-        selectedTimes.add(time);
-
-        timePickerContainer.addView(newTimePickerView, timePickerContainer.getChildCount() - 1);
-    }
-
-    // Method to set the medication data for editing
-    public void setMedication(Medication medication) {
-        this.medicationToEdit = medication;
     }
 
     @Override
@@ -155,11 +129,16 @@ public class MedicationFormDialog extends ReminderFormDialog {
         if (!name.isEmpty() && !amount.isEmpty() && !selectedTimes.isEmpty()) {
             // Notify the listener with the form data (pass all 5 arguments)
             if (listener != null) {
-                listener.onReminderAdded(name, dosage, frequency, selectedTimes, sideEffects,foodRelation);
+                listener.onReminderAdded(name, dosage, frequency, selectedTimes, sideEffects, foodRelation);
                 dismiss();
             }
         } else {
             Toast.makeText(getContext(), "Please fill all required fields", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // Method to set the medication data for editing
+    public void setMedication(Medication medication) {
+        this.medicationToEdit = medication;
     }
 }
