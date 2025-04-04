@@ -24,6 +24,9 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.medassist.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import androidx.appcompat.widget.PopupMenu;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,6 +72,41 @@ public class MainActivity extends AppCompatActivity {
         assert navHostFragment != null;
         NavController navController = navHostFragment.getNavController();
 
+        // Handling the page title here
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            TextView titleLine1 = findViewById(R.id.titleLine1);
+            TextView titleLine2 = findViewById(R.id.titleLine2);
+
+            if (titleLine1 != null && titleLine2 != null) {
+                int destId = destination.getId();
+
+                if (destId == R.id.nav_transform) {
+                    titleLine1.setText("Welcome back,");
+                    titleLine2.setText("User");
+                }
+                else if (destId == R.id.nav_medication) {
+                    titleLine1.setText("Manage your");
+                    titleLine2.setText("Medications");
+                }
+                else if (destId == R.id.nav_appointment) {
+                    titleLine1.setText("Your");
+                    titleLine2.setText("Appointments");
+                }
+                else if (destId == R.id.nav_exercise) {
+                    titleLine1.setText("Track your");
+                    titleLine2.setText("Exercises");
+                }
+                else if (destId == R.id.nav_settings) {
+                    titleLine1.setText("Account");
+                    titleLine2.setText("Settings");
+                }
+                else {
+                    titleLine1.setText("Welcome back,");
+                    titleLine2.setText("User");
+                }
+            }
+        });
+
         NavigationView navigationView = binding.navView;
         if (navigationView != null) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -89,17 +127,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Hide the default title in the toolbar
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        TextView pageTitleTextView = findViewById(R.id.pageTitleTextView);
-        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if (pageTitleTextView != null) {
-                pageTitleTextView.setText(destination.getLabel());
-            }
-        });
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        }
+//
+//        TextView pageTitleTextView = findViewById(R.id.pageTitleTextView);
+//        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+//            if (pageTitleTextView != null) {
+//                pageTitleTextView.setText(destination.getLabel());
+//            }
+//        });
     }
+
+//    private String getUserName() {
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if (user != null && user.getDisplayName() != null) {
+//            return user.getDisplayName();
+//        }
+//        return "User"; // Default if not logged in or no name
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
