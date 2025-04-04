@@ -160,9 +160,9 @@ public class MedicationFormDialog extends DialogFragment {
         String amount = medicationAmountEditText.getText().toString().trim();
         String doseUnit = doseUnitSpinner.getSelectedItem().toString();
         String dosage = amount + " " + doseUnit;
+        String frequency = frequencySpinner.getSelectedItem().toString();
         String sideEffects = sideEffectsEditText.getText().toString().trim();
-        List<String> times = frequencyHandler.getSelectedTimes();
-        String frequency = frequencyHandler.getSelectedFrequency();
+
         // Get food relation
         String foodRelation = "N.A";
         int selectedId = foodRelationRadioGroup.getCheckedRadioButtonId();
@@ -173,9 +173,9 @@ public class MedicationFormDialog extends DialogFragment {
         }
 
         // Validate inputs
-        if (!name.isEmpty() && !amount.isEmpty() && !times.isEmpty()) {
+        if (!name.isEmpty() && !amount.isEmpty() && !selectedTimes.isEmpty()) {
             if (listener != null) {
-                listener.onMedicationAdded(name, dosage, frequency, times, sideEffects, foodRelation);
+                listener.onMedicationAdded(name, dosage, frequency, selectedTimes, sideEffects, foodRelation);
                 dismiss();
             }
         } else {
@@ -280,24 +280,71 @@ public class MedicationFormDialog extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize the FrequencyHandler
-        LinearLayout notificationTimesContainer = view.findViewById(R.id.notificationTimesContainer);
-        frequencyHandler = new FrequencyHandler(
-                getContext(),
-                frequencySpinner,
-                notificationTimesContainer,
-                timePickerContainer
-        );
-
-        // If editing an existing medication
+        // If we're editing a medication, pre-fill the form
         if (medicationToEdit != null) {
-            // Other field initialization...
+            nameEditText.setText(medicationToEdit.getName());
 
-            // Set frequency and notification times using the handler
-            frequencyHandler.setFrequencyAndTimes(
-                    medicationToEdit.getFrequency(),
-                    medicationToEdit.getNotificationTimes()
-            );
+            // Parse dosage to get amount and unit
+            String dosage = medicationToEdit.getDosage();
+            if (dosage != null && !dosage.isEmpty()) {
+                String[] parts = dosage.split(" ", 2);
+                if (parts.length > 0) {
+                    medicationAmountEditText.setText(parts[0]);
+                    if (parts.length > 1) {
+                        // Find and select the matching unit in the spinner
+                        selectSpinnerItemByValue(doseUnitSpinner, parts[1]);
+                    }
+                }
+            }
+
+            // Set frequency
+            selectSpinnerItemByValue(frequencySpinner, medicationToEdit.getFrequency());
+
+            // Set notification times
+            List<String> times = medicationToEdit.getNotificationTimes();
+            if (times != null && !times.isEmpty()) {
+                // Clear default time picker
+                timePickerContainer.removeAllViews();
+
+                // Add time pickers for each saved time
+                for (String time : times) {
+                    View timePickerView = getLayoutInflater().inflate(R.layout.time_picker_item, null);
+                    TextView timeText = timePickerView.findViewById(R.id.timePickerText);
+                    ImageButton selectTimeButton = timePickerView.findViewById(R.id.selectTimeButton);
+                    ImageButton removeTimeButton = timePickerView.findViewById(R.id.removeTimeButton);
+
+                    timeText.setText(time);
+                    selectedTimes.add(time);
+
+                    selectTimeButton.setOnClickListener(v -> showMaterialTimePicker(timeText));
+
+                    if (times.size() > 1) {
+                        removeTimeButton.setVisibility(View.VISIBLE);
+                        removeTimeButton.setOnClickListener(v -> {
+                            timePickerContainer.removeView(timePickerView);
+                            selectedTimes.remove(time);
+                        });
+                    }
+
+                    timePickerContainer.addView(timePickerView);
+                }
+
+            }
+
+            // Set side effects
+            sideEffectsEditText.setText(medicationToEdit.getSideEffects());
+
+            // Set food relation
+            String foodRelation = medicationToEdit.getFoodRelation();
+            if (foodRelation != null) {
+                if (foodRelation.equals("Before")) {
+                    foodRelationRadioGroup.check(R.id.beforeMealRadioButton);
+                } else if (foodRelation.equals("After")) {
+                    foodRelationRadioGroup.check(R.id.afterMealRadioButton);
+                } else {
+                    foodRelationRadioGroup.check(R.id.naMealRadioButton);
+                }
+            }
         }
     }
 

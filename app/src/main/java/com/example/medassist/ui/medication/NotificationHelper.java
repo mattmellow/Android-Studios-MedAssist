@@ -123,7 +123,7 @@ public class NotificationHelper {
         // Cancel all possible time slots (up to 10 should be more than enough)
         for (int i = 0; i < 10; i++) {
             Intent intent = new Intent(context, AlarmReceiver.class);
-            int notificationId = (int) (medicationId + i); // Match the ID generation in scheduleMedicationReminder
+            int notificationId = (int) medicationId * 100 + i;
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     context,
