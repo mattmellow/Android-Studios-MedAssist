@@ -50,6 +50,7 @@
     <string name="progress_number">60%</string>
     <string name="brisk_walking">Brisk Walking 3km</string>
     <string name="swimming">Swimming</string>
+    <string name="description_add_exercise">add exercise here ****</string>
     <string-array name="duration_units">
         <item>days</item>
         <item>weeks</item>
