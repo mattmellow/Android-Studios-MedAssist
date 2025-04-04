@@ -11,31 +11,36 @@
         android:padding="16dp">
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp">
-            <Button
-            android:id="@+id/backButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/circular_button"
-            android:text="❮"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:gravity="center"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="10dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/backButton"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/circular_button"
+                android:backgroundTint="@color/darkblue"
+                android:text="❮"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:gravity="center"/>
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add Medication"
                 android:textSize="25sp"
                 android:textColor="@color/black"
-                android:layout_marginStart="20dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="4dp"/>
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingStart="20dp"/>
 
         </LinearLayout>
+
 
         <TextView
             android:layout_width="match_parent"
@@ -288,13 +293,13 @@
             android:padding="12dp"
             android:layout_marginBottom="16dp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/doneButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Done"
             android:textColor="#FFFFFF"
-            android:backgroundTint="@color/lightgrey"
+            android:backgroundTint="@color/darkblue"
             android:background="@drawable/input_bg"
             android:padding="12dp"/>
 

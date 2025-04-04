@@ -47,6 +47,8 @@ public class MedicationFormDialog extends DialogFragment {
     private List<String> selectedTimes;
     private OnMedicationAddedListener listener;
 
+    private FrequencyHandler frequencyHandler;
+
     public interface OnMedicationAddedListener {
         void onMedicationAdded(String name, String dosage, String frequency, List<String> times, String sideEffects, String foodRelation);
     }
@@ -266,8 +268,6 @@ public class MedicationFormDialog extends DialogFragment {
         // Show the picker
         materialTimePicker.show(getChildFragmentManager(), "MATERIAL_TIME_PICKER");
     }
-
-    // Add this to MedicationFormDialog.java
     private Medication medicationToEdit;
 
     public void setMedication(Medication medication) {
