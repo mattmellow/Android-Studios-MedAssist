@@ -68,26 +68,18 @@
                     android:textColor="#0066CC" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <!-- Multiple Notification Timings -->
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/timingsContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start"
+                app:flexDirection="row">
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/clock_icon" />
-
-                <TextView
-                    android:id="@+id/medicationTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="5dp"
-                    android:text="09:00pm"
-                    android:textSize="14sp"
-                    android:textColor="#000000" />
-
-            </LinearLayout>
+                <!-- Time entries will be added here programmatically -->
+            </com.google.android.flexbox.FlexboxLayout>
 
         </LinearLayout>
 

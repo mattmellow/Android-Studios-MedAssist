@@ -268,8 +268,6 @@ public class MedicationFormDialog extends DialogFragment {
         // Show the picker
         materialTimePicker.show(getChildFragmentManager(), "MATERIAL_TIME_PICKER");
     }
-
-    // Add this to MedicationFormDialog.java
     private Medication medicationToEdit;
 
     public void setMedication(Medication medication) {
