@@ -14,22 +14,21 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="@color/white"
             app:popupTheme="@style/Theme.MedAssist.PopupOverlay">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/medicationHeaderLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
+                android:layout_height="70dp"
+                android:layout_marginVertical="5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
 
                 <ImageView
                     android:id="@+id/logoImageView"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/imagelogo"
                     android:scaleType="fitXY"
@@ -37,23 +36,13 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
-                <TextView
-                    android:id="@+id/appTitleTextView"
-                    android:textColor="#0A54B6"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="MedAssist"
-                    android:paddingStart="20dp"
-                    app:layout_constraintStart_toEndOf="@id/logoImageView"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+
 
                 <ImageView
                     android:id="@+id/accountImageView"
-                    android:layout_width="47dp"
-                    android:layout_height="47dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="-6dp"
                     android:src="@drawable/account_circle"
                     android:scaleType="fitXY"
                     app:layout_constraintEnd_toEndOf="parent"

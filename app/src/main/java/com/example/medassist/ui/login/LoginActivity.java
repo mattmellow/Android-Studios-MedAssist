@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.medassist.MainActivity;
 import com.example.medassist.R;
 
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -55,6 +54,12 @@ public class LoginActivity extends AppCompatActivity {
                         if (user != null && user.isEmailVerified()) {
                             Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
+
+//                            //jya added and modified to nav to home after login
+//                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                            intent.putExtra("NAV_TO", "home");  // Custom redirection
+//                            startActivity(intent);
+
                             finish();
                         } else {
                             Toast.makeText(LoginActivity.this, "Please verify your email before logging in", Toast.LENGTH_SHORT).show();// for a new eamil

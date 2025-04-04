@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
+    implementation("com.mikhaellopez:circularprogressbar:3.1.0")
+    implementation(libs.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
