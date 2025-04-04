@@ -65,4 +65,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
+    implementation ("com.mikhaellopez:circularprogressbar:3.1.0")
+
 }
