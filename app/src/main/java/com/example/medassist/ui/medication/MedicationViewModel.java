@@ -1,16 +1,17 @@
 package com.example.medassist.ui.medication;
 
 import android.app.Application;
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.medassist.ui.reminders.ReminderRepository;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MedicationViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Medication>> medications;
@@ -107,12 +108,19 @@ public class MedicationViewModel extends AndroidViewModel {
             }
         });
     }
+
     private void loadMedicationsForDate(LocalDate date) {
         isLoading.setValue(true);
 
-        repository.loadMedicationsForDate(date, new MedicationRepository.OnMedicationsLoadedListener() {
+        repository.loadMedicationsForDate(date, new ReminderRepository.OnRemindersLoadedListener() {
             @Override
-            public void onMedicationsLoaded(List<Medication> loadedMedications) {
+            public void onRemindersLoaded(List<Map<String, Object>> loadedReminders) {
+                // Convert Map to Medication objects
+                List<Medication> loadedMedications = new ArrayList<>();
+                for (Map<String, Object> reminderData : loadedReminders) {
+                    Medication medication = (Medication) reminderData.get("medication");
+                    loadedMedications.add(medication);
+                }
                 medications.setValue(loadedMedications);
                 isLoading.setValue(false);
             }
@@ -124,5 +132,4 @@ public class MedicationViewModel extends AndroidViewModel {
             }
         });
     }
-
 }

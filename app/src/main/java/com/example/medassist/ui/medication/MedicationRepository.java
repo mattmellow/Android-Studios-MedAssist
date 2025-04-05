@@ -1,17 +1,11 @@
 package com.example.medassist.ui.medication;
 
 import android.content.Context;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
+import com.example.medassist.ui.reminders.ReminderRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,33 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Repository class to handle all Firebase operations related to medications
+ * MedicationRepository handles all Firebase operations for medication reminders
  */
-public class MedicationRepository {
-    private static final String DB_URL = "https://medassist-fdddd-default-rtdb.asia-southeast1.firebasedatabase.app";
-    private final DatabaseReference mDatabase;
-    private final FirebaseAuth mAuth;
-    private final Context context;
-
-    public interface OnMedicationsLoadedListener {
-        void onMedicationsLoaded(List<Medication> medications);
-        void onError(String errorMessage);
-    }
-
-    public interface OnOperationCompleteListener {
-        void onSuccess();
-        void onError(String errorMessage);
-    }
+public class MedicationRepository extends ReminderRepository {
 
     public MedicationRepository(Context context) {
-        this.context = context;
-        this.mAuth = FirebaseAuth.getInstance();
-        this.mDatabase = FirebaseDatabase.getInstance(DB_URL).getReference();
+        super(context);
     }
 
-    /**
-     * Save a medication to Firebase
-     */
+    // Save a medication to Firebase
     public void saveMedication(Medication medication, OnOperationCompleteListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -57,26 +33,23 @@ public class MedicationRepository {
 
         String userId = currentUser.getUid();
         String dateStr = medication.getDate().toString();
+        String medId = String.valueOf(medication.getId());
 
-        // Create a map of medication data
+        // Create a map of medication-specific data
         Map<String, Object> medData = new HashMap<>();
         medData.put("name", medication.getName());
         medData.put("dosage", medication.getDosage());
         medData.put("frequency", medication.getFrequency());
         medData.put("notificationTimes", medication.getNotificationTimes());
         medData.put("sideEffects", medication.getSideEffects());
-        medData.put("date", dateStr);
-        medData.put("id", medication.getId());
         medData.put("foodRelation", medication.getFoodRelation());
 
-        // Save to Firebase - using structure: medications/userId/date/medicationId
-        String medId = String.valueOf(medication.getId());
-        mDatabase.child("medications").child(userId).child(dateStr).child(medId).setValue(medData)
-                .addOnSuccessListener(aVoid -> listener.onSuccess())
-                .addOnFailureListener(e -> listener.onError(e.getMessage()));
+        // Call the save method from the base class
+        saveReminder(medData, userId, dateStr, medId, listener);
     }
 
-    public void loadMedicationsForDate(LocalDate date, OnMedicationsLoadedListener listener) {
+    // Load medications for a specific date
+    public void loadMedicationsForDate(LocalDate date, OnRemindersLoadedListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
@@ -87,62 +60,10 @@ public class MedicationRepository {
         String userId = currentUser.getUid();
         String dateStr = date.toString();
 
-        mDatabase.child("medications").child(userId).child(dateStr)
-                .addValueEventListener(new ValueEventListener() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        List<Medication> medicationList = new ArrayList<>();
-
-                        for (DataSnapshot medSnapshot : dataSnapshot.getChildren()) {
-                            String name = medSnapshot.child("name").getValue(String.class);
-                            String dosage = medSnapshot.child("dosage").getValue(String.class);
-                            String frequency = medSnapshot.child("frequency").getValue(String.class);
-                            String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
-                            String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
-                            Long id = medSnapshot.child("id").getValue(Long.class);
-
-                            // Try to get notification times list
-                            List<String> notificationTimes = new ArrayList<>();
-                            if (medSnapshot.child("notificationTimes").exists()) {
-                                // This handles the case where notificationTimes is properly stored as a list
-                                for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
-                                    String time = timeSnapshot.getValue(String.class);
-                                    if (time != null) {
-                                        notificationTimes.add(time);
-                                    }
-                                }
-                            } else {
-                                // Legacy support - get single time value
-                                String time = medSnapshot.child("time").getValue(String.class);
-                                if (time != null && !time.isEmpty()) {
-                                    notificationTimes.add(time);
-                                }
-                            }
-
-                            if (name != null && dosage != null && frequency != null && id != null) {
-                                Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects);
-                                medication.setDate(date);
-                                if (foodRelation != null) {
-                                    medication.setFoodRelation(foodRelation);
-                                }
-                                medicationList.add(medication);
-                            }
-                        }
-
-                        listener.onMedicationsLoaded(medicationList);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        listener.onError(databaseError.getMessage());
-                    }
-                });
+        loadRemindersForDate(userId, dateStr, listener);
     }
 
-    /**
-     * Delete a medication from Firebase
-     */
+    // Delete medication
     public void deleteMedication(Medication medication, OnOperationCompleteListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -155,8 +76,43 @@ public class MedicationRepository {
         String dateStr = medication.getDate().toString();
         String medId = String.valueOf(medication.getId());
 
-        mDatabase.child("medications").child(userId).child(dateStr).child(medId).removeValue()
-                .addOnSuccessListener(aVoid -> listener.onSuccess())
-                .addOnFailureListener(e -> listener.onError(e.getMessage()));
+        deleteReminder(userId, dateStr, medId, listener);
+    }
+
+    // Process DataSnapshot for medications
+    @Override
+    protected List<Map<String, Object>> processDataSnapshot(DataSnapshot dataSnapshot) {
+        List<Map<String, Object>> medicationsList = new ArrayList<>();
+
+        for (DataSnapshot medSnapshot : dataSnapshot.getChildren()) {
+            String name = medSnapshot.child("name").getValue(String.class);
+            String dosage = medSnapshot.child("dosage").getValue(String.class);
+            String frequency = medSnapshot.child("frequency").getValue(String.class);
+            String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
+            String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
+            Long id = medSnapshot.child("id").getValue(Long.class);
+
+            // Try to get notification times list
+            List<String> notificationTimes = new ArrayList<>();
+            if (medSnapshot.child("notificationTimes").exists()) {
+                for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
+                    String time = timeSnapshot.getValue(String.class);
+                    if (time != null) {
+                        notificationTimes.add(time);
+                    }
+                }
+            }
+
+            if (name != null && dosage != null && frequency != null && id != null) {
+                Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects);
+                medication.setFoodRelation(foodRelation);
+                // Add the medication data as a Map instead of a Medication object
+                Map<String, Object> medData = new HashMap<>();
+                medData.put("medication", medication);  // Store the medication object within the map
+                medicationsList.add(medData);
+            }
+        }
+
+        return medicationsList;
     }
 }
