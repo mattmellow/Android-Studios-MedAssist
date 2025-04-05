@@ -44,14 +44,14 @@ public abstract class ReminderRepository {
                 .addOnFailureListener(e -> listener.onError(e.getMessage()));
     }
 
-    // Load reminders from Firebase - common logic
-    protected void loadRemindersForDate(String userId, String dateStr, OnRemindersLoadedListener listener) {
+    // Load all reminders (no filtering by date)
+    protected void loadAllReminders(String userId, OnRemindersLoadedListener listener) {
         if (userId == null) {
             listener.onError("User not logged in");
             return;
         }
 
-        mDatabase.child("reminders").child(userId).child(dateStr)
+        mDatabase.child("reminders").child(userId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

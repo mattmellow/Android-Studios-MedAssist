@@ -1,11 +1,16 @@
 package com.example.medassist.ui.medication;
 
 import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.example.medassist.ui.reminders.ReminderRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,8 +58,8 @@ public class MedicationRepository extends ReminderRepository {
     }
 
 
-    // Load medications for a specific date
-    public void loadMedicationsForDate(LocalDate date, OnRemindersLoadedListener listener) {
+
+    public void loadMedications(OnRemindersLoadedListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
@@ -63,10 +68,69 @@ public class MedicationRepository extends ReminderRepository {
         }
 
         String userId = currentUser.getUid();
-        String dateStr = date.toString();
 
-        loadRemindersForDate(userId, dateStr, listener);
+        // Load all medications (iterate through all dates)
+        mDatabase.child("reminders").child(userId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<Map<String, Object>> medicationsList = new ArrayList<>();
+
+                        // Iterate through all dates for the user
+                        for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
+                            // Iterate through all medication IDs under each date
+                            for (DataSnapshot medSnapshot : dateSnapshot.getChildren()) {
+                                Log.d("MedicationRepository", "Snapshot structure: " + medSnapshot.getValue());
+                                // Process the medication details
+                                String name = medSnapshot.child("name").getValue(String.class);
+                                String dosage = medSnapshot.child("dosage").getValue(String.class);
+                                String frequency = medSnapshot.child("frequency").getValue(String.class);
+                                String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
+                                String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
+                                String duration = medSnapshot.child("duration").getValue(String.class);  // Duration
+                                String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Duration unit
+                                Long id = Long.parseLong(medSnapshot.getKey()); // Use the key as the ID
+
+                                Log.d("MedicationRepository", "Medication Name: " + name);
+                                Log.d("MedicationRepository", "Dosage: " + dosage);
+                                Log.d("MedicationRepository", "id: " + id);
+                                Log.d("MedicationRepository", "Frequency: " + frequency);
+
+
+                                // Notification times
+                                List<String> notificationTimes = new ArrayList<>();
+                                if (medSnapshot.child("notificationTimes").exists()) {
+                                    for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
+                                        String time = timeSnapshot.getValue(String.class);
+                                        if (time != null) {
+                                            notificationTimes.add(time);
+                                        }
+                                    }
+                                }
+
+                                if (name != null && dosage != null && frequency != null && id != null) {
+                                    Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
+                                    medication.setFoodRelation(foodRelation);
+                                    Map<String, Object> medData = new HashMap<>();
+                                    medData.put("medication", medication); // Store medication object
+                                    medicationsList.add(medData);
+                                }
+                            }
+                        }
+                        Log.d("MedicationRepository", "Medications List: " + medicationsList.toString());
+
+
+
+                        listener.onRemindersLoaded(medicationsList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        listener.onError(databaseError.getMessage());
+                    }
+                });
     }
+
 
     // Delete medication
     public void deleteMedication(Medication medication, OnOperationCompleteListener listener) {
@@ -95,6 +159,8 @@ public class MedicationRepository extends ReminderRepository {
             String frequency = medSnapshot.child("frequency").getValue(String.class);
             String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
             String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
+            String duration = medSnapshot.child("duration").getValue(String.class);  // Get duration
+            String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Get duration unit
             Long id = medSnapshot.child("id").getValue(Long.class);
 
             // Try to get notification times list
@@ -108,17 +174,13 @@ public class MedicationRepository extends ReminderRepository {
                 }
             }
 
-            //VERY VERY VERY TEMPORARILY FOR COMPILATION SAKE
-            String duration = "3";
-            String durationUnit = "days";
 
 
             if (name != null && dosage != null && frequency != null && id != null) {
                 Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
                 medication.setFoodRelation(foodRelation);
-                // Add the medication data as a Map instead of a Medication object
                 Map<String, Object> medData = new HashMap<>();
-                medData.put("medication", medication);  // Store the medication object within the map
+                medData.put("medication", medication);
                 medicationsList.add(medData);
             }
         }

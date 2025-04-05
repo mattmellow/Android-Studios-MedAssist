@@ -47,7 +47,7 @@ public class MedicationViewModel extends AndroidViewModel {
 
     public void setSelectedDate(LocalDate date) {
         selectedDate.setValue(date);
-        loadMedicationsForDate(date);
+        loadMedications();
     }
 
     public void addMedication(Medication medication) {
@@ -109,13 +109,12 @@ public class MedicationViewModel extends AndroidViewModel {
         });
     }
 
-    private void loadMedicationsForDate(LocalDate date) {
+    public void loadMedications() {
         isLoading.setValue(true);
 
-        repository.loadMedicationsForDate(date, new ReminderRepository.OnRemindersLoadedListener() {
+        repository.loadMedications(new ReminderRepository.OnRemindersLoadedListener() {
             @Override
             public void onRemindersLoaded(List<Map<String, Object>> loadedReminders) {
-                // Convert Map to Medication objects
                 List<Medication> loadedMedications = new ArrayList<>();
                 for (Map<String, Object> reminderData : loadedReminders) {
                     Medication medication = (Medication) reminderData.get("medication");

@@ -112,22 +112,18 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void setupMedicationList() {
-        // Create adapter with empty list initially
         medicationAdapter = new MedicationAdapter(new ArrayList<>());
         binding.medicationRecyclerView.setAdapter(medicationAdapter);
         binding.medicationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Handle click events
         medicationAdapter.setOnMedicationClickListener(new MedicationAdapter.OnMedicationClickListener() {
             @Override
             public void onMedicationClick(Medication medication) {
-                // This could be expanded to show details or edit dialog
                 Toast.makeText(getContext(), "Selected: " + medication.getName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onMedicationLongClick(Medication medication, int position) {
-                // Show delete option
                 showDeleteConfirmationDialog(medication);
             }
         });
@@ -151,11 +147,9 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void observeViewModel() {
-        // Observe medications from ViewModel
         medicationViewModel.getMedications().observe(getViewLifecycleOwner(), medications -> {
             medicationAdapter.updateMedications(medications);
 
-            // Toggle empty state visibility
             if (medications.isEmpty()) {
                 binding.emptyStateLayout.setVisibility(View.VISIBLE);
                 binding.medicationRecyclerView.setVisibility(View.GONE);
@@ -165,17 +159,7 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
             }
         });
 
-        // Observe loading state
-        medicationViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Could show loading indicator here if needed
-        });
-
-        // Observe error messages
-        medicationViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMsg -> {
-            if (errorMsg != null && !errorMsg.isEmpty()) {
-                Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
-            }
-        });
+        medicationViewModel.loadMedications();
     }
 
     private void showDeleteConfirmationDialog(Medication medication) {
