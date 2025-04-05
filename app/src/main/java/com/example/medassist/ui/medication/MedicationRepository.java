@@ -55,16 +55,13 @@ public class MedicationRepository extends ReminderRepository {
         medData.put("duration", medication.getDuration());  // Add duration of medication
         medData.put("durationUnit", medication.getDurationUnit());  // Add duration unit (e.g., "days", "weeks")
 
-        // Call the save method from the base class
-        saveReminder(medData, userId, currentDate, medId, listener);
+        // Update the path to store under the new "medications" node in the database
+        saveReminder(medData, userId, "medications", currentDate, medId, listener);
     }
-
-
-
 
     // Overloaded method that takes a LocalDate argument for filtering medications
     public void loadMedications(OnRemindersLoadedListener listener, LocalDate selectedDate) {
-        Log.d("filter","i am in repo load med with date: " + selectedDate);
+        Log.d("filter", "i am in repo load med with date: " + selectedDate);
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
@@ -73,13 +70,14 @@ public class MedicationRepository extends ReminderRepository {
         }
 
         String userId = currentUser.getUid();
-        Log.d("filter","i am in repo with id: " + userId);
-        // Load all medications (iterate through all dates)
-        mDatabase.child("reminders").child(userId)
+        Log.d("filter", "i am in repo with id: " + userId);
+
+        // Load medications from the "medications" node in the database
+        mDatabase.child("reminders").child(userId).child("medications")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d("filter","i am in ondatachange: ");
+                        Log.d("filter", "i am in ondatachange: ");
                         List<Map<String, Object>> medicationsList = new ArrayList<>();
 
                         // Iterate through all dates for the user
@@ -97,7 +95,7 @@ public class MedicationRepository extends ReminderRepository {
                                 Long id = Long.parseLong(medSnapshot.getKey()); // Use the key as the ID
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                 LocalDate medStartDate = LocalDate.parse(medSnapshot.child("date").getValue(String.class), formatter);  // Duration unit
-                                Log.d("filter","i am in loop with: " + name+dosage+frequency+sideEffects+foodRelation+duration+durationUnit);
+                                Log.d("filter", "i am in loop with: " + name + dosage + frequency + sideEffects + foodRelation + duration + durationUnit);
 
                                 // Notification times
                                 List<String> notificationTimes = new ArrayList<>();
@@ -109,23 +107,25 @@ public class MedicationRepository extends ReminderRepository {
                                         }
                                     }
                                 }
-                                Log.d("filter","i am past notif times" + userId);
+
+                                Log.d("filter", "i am past notif times" + userId);
+
                                 if (name != null && dosage != null && frequency != null && id != null) {
                                     Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
                                     medication.setFoodRelation(foodRelation);
 
                                     // Apply filter based on frequency and duration
-                                    Log.d("filter","at fre and dura " + selectedDate);
-                                    Log.d("filter","at fre and dura " + medication);
+                                    Log.d("filter", "at fre and dura " + selectedDate);
+                                    Log.d("filter", "at fre and dura " + medication);
 
                                     if (shouldMedicationAppearOnDate(medication, selectedDate, medStartDate)) {
-                                        Log.d("filter","i am in shouldmed condition: " + medication + selectedDate);
+                                        Log.d("filter", "i am in shouldmed condition: " + medication + selectedDate);
                                         Map<String, Object> medData = new HashMap<>();
                                         medData.put("medication", medication); // Store medication object
                                         medicationsList.add(medData);
-                                        Log.d("filter","i am at the end with : " + medData + "123123" + medicationsList);
+                                        Log.d("filter", "i am at the end with : " + medData + "123123" + medicationsList);
                                     }
-                                    Log.d("filter","i am past the filter with:" + medicationsList);
+                                    Log.d("filter", "i am past the filter with:" + medicationsList);
                                 }
                             }
                         }
@@ -151,8 +151,8 @@ public class MedicationRepository extends ReminderRepository {
 
         String userId = currentUser.getUid();
 
-        // Load all medications (iterate through all dates)
-        mDatabase.child("reminders").child(userId)
+        // Load medications from the "medications" node in the database
+        mDatabase.child("reminders").child(userId).child("medications")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -204,7 +204,6 @@ public class MedicationRepository extends ReminderRepository {
     }
 
     // Helper method to apply the frequency and duration filter
-// Helper method to apply the frequency and duration filter
     private boolean shouldMedicationAppearOnDate(Medication medication, LocalDate selectedDate, LocalDate medicationStartDate) {
         // Get medication date and frequency
         Log.d("filter", "getting date ");
@@ -273,8 +272,6 @@ public class MedicationRepository extends ReminderRepository {
     }
 
 
-
-
     // Delete medication by ID
     public void deleteMedication(Medication medication, OnOperationCompleteListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -288,15 +285,14 @@ public class MedicationRepository extends ReminderRepository {
         String medId = String.valueOf(medication.getId());
 
         // Start the deletion process
-        mDatabase.child("reminders").child(userId)
+        mDatabase.child("reminders").child(userId).child("medications") // Adjusted to reflect new path
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         AtomicBoolean medicationDeleted = new AtomicBoolean(false);
 
-                        // Iterate through all dates for the user
+                        // Iterate through all medications for the user
                         for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
-                            // Iterate through all medication IDs under each date
                             for (DataSnapshot medSnapshot : dateSnapshot.getChildren()) {
                                 // Compare the ID of each medication with the provided ID
                                 if (medSnapshot.getKey().equals(medId)) {
@@ -333,46 +329,46 @@ public class MedicationRepository extends ReminderRepository {
                 });
     }
 
-
-
-
     // Process DataSnapshot for medications
     @Override
     protected List<Map<String, Object>> processDataSnapshot(DataSnapshot dataSnapshot) {
         List<Map<String, Object>> medicationsList = new ArrayList<>();
 
-        for (DataSnapshot medSnapshot : dataSnapshot.getChildren()) {
-            String name = medSnapshot.child("name").getValue(String.class);
-            String dosage = medSnapshot.child("dosage").getValue(String.class);
-            String frequency = medSnapshot.child("frequency").getValue(String.class);
-            String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
-            String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
-            String duration = medSnapshot.child("duration").getValue(String.class);  // Get duration
-            String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Get duration unit
-            Long id = medSnapshot.child("id").getValue(Long.class);
+        for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
+            // Iterate through all medication IDs under each date in "medications"
+            for (DataSnapshot medSnapshot : dateSnapshot.getChildren()) {
+                String name = medSnapshot.child("name").getValue(String.class);
+                String dosage = medSnapshot.child("dosage").getValue(String.class);
+                String frequency = medSnapshot.child("frequency").getValue(String.class);
+                String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
+                String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
+                String duration = medSnapshot.child("duration").getValue(String.class);  // Get duration
+                String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Get duration unit
+                Long id = medSnapshot.child("id").getValue(Long.class);
 
-            // Try to get notification times list
-            List<String> notificationTimes = new ArrayList<>();
-            if (medSnapshot.child("notificationTimes").exists()) {
-                for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
-                    String time = timeSnapshot.getValue(String.class);
-                    if (time != null) {
-                        notificationTimes.add(time);
+                // Try to get notification times list
+                List<String> notificationTimes = new ArrayList<>();
+                if (medSnapshot.child("notificationTimes").exists()) {
+                    for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
+                        String time = timeSnapshot.getValue(String.class);
+                        if (time != null) {
+                            notificationTimes.add(time);
+                        }
                     }
                 }
-            }
 
-
-
-            if (name != null && dosage != null && frequency != null && id != null) {
-                Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
-                medication.setFoodRelation(foodRelation);
-                Map<String, Object> medData = new HashMap<>();
-                medData.put("medication", medication);
-                medicationsList.add(medData);
+                if (name != null && dosage != null && frequency != null && id != null) {
+                    Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
+                    medication.setFoodRelation(foodRelation);
+                    Map<String, Object> medData = new HashMap<>();
+                    medData.put("medication", medication);
+                    medicationsList.add(medData);
+                }
             }
         }
 
         return medicationsList;
     }
+
+
 }
