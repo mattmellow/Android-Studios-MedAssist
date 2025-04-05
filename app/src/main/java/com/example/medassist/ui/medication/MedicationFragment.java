@@ -1,6 +1,7 @@
 package com.example.medassist.ui.medication;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -159,8 +160,17 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
             }
         });
 
-        medicationViewModel.loadMedications();
+        LocalDate selectedDate = datePickerFragment.getSelectedDate();
+        Log.d("filter","i am in med frag observe with date: " + selectedDate);
+        // If selectedDate is null, use today's date as a fallback
+        if (selectedDate == null) {
+            selectedDate = LocalDate.now();
+        }
+        Log.d("filter","i am in med frag observe with date: " + selectedDate);
+        medicationViewModel.loadMedications(selectedDate);  // Pass the selected date
     }
+
+
 
     private void showDeleteConfirmationDialog(Medication medication) {
         DialogHelper.showDeleteConfirmationDialog(getContext(), medication, () -> {

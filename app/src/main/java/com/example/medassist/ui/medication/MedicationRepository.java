@@ -12,6 +12,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +61,86 @@ public class MedicationRepository extends ReminderRepository {
 
 
 
+
+    // Overloaded method that takes a LocalDate argument for filtering medications
+    public void loadMedications(OnRemindersLoadedListener listener, LocalDate selectedDate) {
+        Log.d("filter","i am in repo load med with date: " + selectedDate);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            listener.onError("User not logged in");
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        Log.d("filter","i am in repo with id: " + userId);
+        // Load all medications (iterate through all dates)
+        mDatabase.child("reminders").child(userId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d("filter","i am in ondatachange: ");
+                        List<Map<String, Object>> medicationsList = new ArrayList<>();
+
+                        // Iterate through all dates for the user
+                        for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
+                            // Iterate through all medication IDs under each date
+                            for (DataSnapshot medSnapshot : dateSnapshot.getChildren()) {
+                                // Process the medication details
+                                String name = medSnapshot.child("name").getValue(String.class);
+                                String dosage = medSnapshot.child("dosage").getValue(String.class);
+                                String frequency = medSnapshot.child("frequency").getValue(String.class);
+                                String sideEffects = medSnapshot.child("sideEffects").getValue(String.class);
+                                String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
+                                String duration = medSnapshot.child("duration").getValue(String.class);  // Duration
+                                String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Duration unit
+                                Long id = Long.parseLong(medSnapshot.getKey()); // Use the key as the ID
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                                LocalDate medStartDate = LocalDate.parse(medSnapshot.child("date").getValue(String.class), formatter);  // Duration unit
+                                Log.d("filter","i am in loop with: " + name+dosage+frequency+sideEffects+foodRelation+duration+durationUnit);
+
+                                // Notification times
+                                List<String> notificationTimes = new ArrayList<>();
+                                if (medSnapshot.child("notificationTimes").exists()) {
+                                    for (DataSnapshot timeSnapshot : medSnapshot.child("notificationTimes").getChildren()) {
+                                        String time = timeSnapshot.getValue(String.class);
+                                        if (time != null) {
+                                            notificationTimes.add(time);
+                                        }
+                                    }
+                                }
+                                Log.d("filter","i am past notif times" + userId);
+                                if (name != null && dosage != null && frequency != null && id != null) {
+                                    Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
+                                    medication.setFoodRelation(foodRelation);
+
+                                    // Apply filter based on frequency and duration
+                                    Log.d("filter","at fre and dura " + selectedDate);
+                                    Log.d("filter","at fre and dura " + medication);
+
+                                    if (shouldMedicationAppearOnDate(medication, selectedDate, medStartDate)) {
+                                        Log.d("filter","i am in shouldmed condition: " + medication + selectedDate);
+                                        Map<String, Object> medData = new HashMap<>();
+                                        medData.put("medication", medication); // Store medication object
+                                        medicationsList.add(medData);
+                                        Log.d("filter","i am at the end with : " + medData + "123123" + medicationsList);
+                                    }
+                                    Log.d("filter","i am past the filter with:" + medicationsList);
+                                }
+                            }
+                        }
+
+                        listener.onRemindersLoaded(medicationsList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        listener.onError(databaseError.getMessage());
+                    }
+                });
+    }
+
+    // Overloaded method that loads all medications without date filtering
     public void loadMedications(OnRemindersLoadedListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -80,7 +162,6 @@ public class MedicationRepository extends ReminderRepository {
                         for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
                             // Iterate through all medication IDs under each date
                             for (DataSnapshot medSnapshot : dateSnapshot.getChildren()) {
-                                Log.d("MedicationRepository", "Snapshot structure: " + medSnapshot.getValue());
                                 // Process the medication details
                                 String name = medSnapshot.child("name").getValue(String.class);
                                 String dosage = medSnapshot.child("dosage").getValue(String.class);
@@ -90,12 +171,6 @@ public class MedicationRepository extends ReminderRepository {
                                 String duration = medSnapshot.child("duration").getValue(String.class);  // Duration
                                 String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Duration unit
                                 Long id = Long.parseLong(medSnapshot.getKey()); // Use the key as the ID
-
-                                Log.d("MedicationRepository", "Medication Name: " + name);
-                                Log.d("MedicationRepository", "Dosage: " + dosage);
-                                Log.d("MedicationRepository", "id: " + id);
-                                Log.d("MedicationRepository", "Frequency: " + frequency);
-
 
                                 // Notification times
                                 List<String> notificationTimes = new ArrayList<>();
@@ -117,9 +192,6 @@ public class MedicationRepository extends ReminderRepository {
                                 }
                             }
                         }
-                        Log.d("MedicationRepository", "Medications List: " + medicationsList.toString());
-
-
 
                         listener.onRemindersLoaded(medicationsList);
                     }
@@ -130,6 +202,77 @@ public class MedicationRepository extends ReminderRepository {
                     }
                 });
     }
+
+    // Helper method to apply the frequency and duration filter
+// Helper method to apply the frequency and duration filter
+    private boolean shouldMedicationAppearOnDate(Medication medication, LocalDate selectedDate, LocalDate medicationStartDate) {
+        // Get medication date and frequency
+        Log.d("filter", "getting date ");
+
+        String frequency = medication.getFrequency();
+        int duration = Integer.parseInt(medication.getDuration());
+        String durationUnit = medication.getDurationUnit();
+
+        // Adjust the duration based on the unit
+        if (durationUnit.equals("weeks")) {
+            duration = duration * 7;  // Convert weeks to days
+        } else if (durationUnit.equals("months")) {
+            duration = duration * 30;  // Approximate months to days
+        }
+
+        // Calculate the end date based on adjusted duration
+        LocalDate medicationEndDate = medicationStartDate.plusDays(duration);
+
+        // Check if the selected date is within the medication's active period
+        boolean isWithinDuration = !selectedDate.isBefore(medicationStartDate) && !selectedDate.isAfter(medicationEndDate);
+
+        // If the date is outside the duration range, return false
+        if (!isWithinDuration) {
+            return false;
+        }
+
+        // Check frequency conditions
+        boolean isValidFrequency = false;
+        Log.d("filter", "at fre and dura " + medicationStartDate);
+
+        switch (frequency) {
+            case "Once daily":
+            case "Twice daily":
+            case "Three times daily":
+            case "Four times daily":
+            case "Every morning":
+            case "Every night":
+                // These frequencies apply daily, so just check the date range
+                isValidFrequency = true;
+                break;
+
+            case "Every other day":
+                // If the frequency is "Every other day", check if the difference between selectedDate and medicationStartDate is odd or even
+                long daysBetween = medicationStartDate.until(selectedDate, ChronoUnit.DAYS);
+                if (daysBetween >= 0 && daysBetween % 2 == 0) {
+                    isValidFrequency = true;
+                }
+                break;
+
+            case "Weekly":
+                // If the frequency is "Weekly", check if the difference between selectedDate and medicationStartDate is a multiple of 7
+                long daysBetweenWeekly = medicationStartDate.until(selectedDate, ChronoUnit.DAYS);
+                if (daysBetweenWeekly >= 0 && daysBetweenWeekly % 7 == 0) {
+                    isValidFrequency = true;
+                }
+                break;
+
+            default:
+                // If the frequency is unknown, don't show the medication
+                isValidFrequency = false;
+                break;
+        }
+
+        // Return true if the date is within duration range and the frequency is valid
+        return isWithinDuration && isValidFrequency;
+    }
+
+
 
 
     // Delete medication by ID

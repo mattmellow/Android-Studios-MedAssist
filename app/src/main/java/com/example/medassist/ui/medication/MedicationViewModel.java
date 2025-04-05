@@ -1,6 +1,8 @@
 package com.example.medassist.ui.medication;
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -47,7 +49,8 @@ public class MedicationViewModel extends AndroidViewModel {
 
     public void setSelectedDate(LocalDate date) {
         selectedDate.setValue(date);
-        loadMedications();
+        Log.d("filter","i am in viewmodel with date: " + date);
+        loadMedications(date);  // Call the new loadMedications method with LocalDate
     }
 
     public void addMedication(Medication medication) {
@@ -57,7 +60,6 @@ public class MedicationViewModel extends AndroidViewModel {
             @Override
             public void onSuccess() {
                 NotificationHelper.scheduleMedicationReminder(getApplication(), medication);
-                // The medication will be loaded through the ValueEventListener in the repository
                 isLoading.setValue(false);
             }
 
@@ -76,7 +78,6 @@ public class MedicationViewModel extends AndroidViewModel {
             @Override
             public void onSuccess() {
                 NotificationHelper.cancelMedicationReminder(getApplication(), medication.getId());
-                // The medication will be removed through the ValueEventListener in the repository
                 isLoading.setValue(false);
             }
 
@@ -94,10 +95,8 @@ public class MedicationViewModel extends AndroidViewModel {
         repository.saveMedication(medication, new MedicationRepository.OnOperationCompleteListener() {
             @Override
             public void onSuccess() {
-                // Cancel the old notification and schedule a new one
                 NotificationHelper.cancelMedicationReminder(getApplication(), medication.getId());
                 NotificationHelper.scheduleMedicationReminder(getApplication(), medication);
-                // The updated medication will be loaded through the ValueEventListener in the repository
                 isLoading.setValue(false);
             }
 
@@ -109,7 +108,8 @@ public class MedicationViewModel extends AndroidViewModel {
         });
     }
 
-    public void loadMedications() {
+    // Updated to use the overloaded loadMedications with LocalDate argument
+    public void loadMedications(LocalDate selectedDate) {
         isLoading.setValue(true);
 
         repository.loadMedications(new ReminderRepository.OnRemindersLoadedListener() {
@@ -129,6 +129,6 @@ public class MedicationViewModel extends AndroidViewModel {
                 errorMessage.setValue(errorMsg);
                 isLoading.setValue(false);
             }
-        });
+        }, selectedDate);  // Pass selectedDate to the repository
     }
 }
