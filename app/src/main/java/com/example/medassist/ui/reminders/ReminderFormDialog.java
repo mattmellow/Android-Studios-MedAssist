@@ -64,17 +64,11 @@ public abstract class ReminderFormDialog extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(layoutResourceId, null);
 
-        // Initialize common fields
-        nameEditText = view.findViewById(R.id.reminderNameEditText);
-        frequencySpinner = view.findViewById(R.id.frequencySpinner);
-        timePickerContainer = view.findViewById(R.id.timePickerContainer);
+        // Initialize selected times list
         selectedTimes = new ArrayList<>();
 
-        // Set up frequency spinner (common for all types)
-        ArrayAdapter<CharSequence> frequencyAdapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.frequency_options, android.R.layout.simple_spinner_item);
-        frequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        frequencySpinner.setAdapter(frequencyAdapter);
+        // Initialize form fields (can be overridden by subclasses)
+        initializeFormFields(view);
 
         setupInitialTimePicker();
 
@@ -83,6 +77,18 @@ public abstract class ReminderFormDialog extends DialogFragment {
 
         builder.setView(view);
         return builder.create();
+    }
+
+    protected void initializeFormFields(View view) {
+        nameEditText = view.findViewById(R.id.reminderNameEditText);
+        frequencySpinner = view.findViewById(R.id.frequencySpinner);
+        timePickerContainer = view.findViewById(R.id.timePickerContainer);
+
+        // Set up frequency spinner (common for all types)
+        ArrayAdapter<CharSequence> frequencyAdapter = ArrayAdapter.createFromResource(
+                getContext(), R.array.frequency_options, android.R.layout.simple_spinner_item);
+        frequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        frequencySpinner.setAdapter(frequencyAdapter);
     }
 
     private void setupInitialTimePicker() {

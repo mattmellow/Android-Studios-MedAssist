@@ -1,7 +1,6 @@
 package com.example.medassist.ui.medication;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -17,6 +16,8 @@ import java.util.List;
 public class MedicationFormDialog extends ReminderFormDialog {
     private EditText medicationAmountEditText;
     private Spinner doseUnitSpinner;
+
+    private Spinner durationUnitSpinner;
     private EditText sideEffectsEditText;
     private RadioGroup foodRelationRadioGroup;
     private Medication medicationToEdit;  // Store the medication to edit
@@ -30,12 +31,14 @@ public class MedicationFormDialog extends ReminderFormDialog {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void initializeFormFields(View view) {
+        // Call the parent implementation to initialize common fields
+        super.initializeFormFields(view);
 
         // Initialize specific fields for medication
         medicationAmountEditText = view.findViewById(R.id.medicationAmountEditText);
         doseUnitSpinner = view.findViewById(R.id.doseUnitSpinner);
+        durationUnitSpinner = view.findViewById(R.id.durationUnitSpinner);
         sideEffectsEditText = view.findViewById(R.id.medicationSideEffectsEditText);
         foodRelationRadioGroup = view.findViewById(R.id.foodRelationRadioGroup);
 
@@ -45,11 +48,11 @@ public class MedicationFormDialog extends ReminderFormDialog {
         doseUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         doseUnitSpinner.setAdapter(doseUnitAdapter);
 
-        // Set up the frequency spinner (already handled in ReminderFormDialog)
-        ArrayAdapter<CharSequence> frequencyAdapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.frequency_options, android.R.layout.simple_spinner_item);
-        frequencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        frequencySpinner.setAdapter(frequencyAdapter);
+        // Set up duration unit spinner
+        ArrayAdapter<CharSequence> durationUnitAdapter = ArrayAdapter.createFromResource(
+                getContext(), R.array.duration_units, android.R.layout.simple_spinner_item);
+        durationUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        durationUnitSpinner.setAdapter(durationUnitAdapter);
 
         // If we're editing a medication, pre-fill the form with the existing data
         if (medicationToEdit != null) {
