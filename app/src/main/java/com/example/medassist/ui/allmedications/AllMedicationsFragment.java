@@ -14,12 +14,12 @@ import android.view.ViewGroup;
 
 import com.example.medassist.R;
 
-public class AllMedications extends Fragment {
+public class AllMedicationsFragment extends Fragment {
 
     private AllMedicationsViewModel mViewModel;
 
-    public static AllMedications newInstance() {
-        return new AllMedications();
+    public static AllMedicationsFragment newInstance() {
+        return new AllMedicationsFragment();
     }
 
     @Override
