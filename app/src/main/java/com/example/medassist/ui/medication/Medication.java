@@ -14,18 +14,23 @@ public class Medication {
     private LocalDate date;
     private String foodRelation;
     private long id;
+    private String duration;  // Added for medication duration
+    private String durationUnit;  // Added for duration unit (e.g., days, weeks)
 
-    public Medication(long id, String name, String dosage, String frequency, List<String> notificationTimes, String sideEffects) {
+    // Constructor including duration and durationUnit
+    public Medication(long id, String name, String dosage, String frequency, List<String> notificationTimes, String sideEffects, String duration, String durationUnit) {
         this.id = id;
         this.name = name;
         this.dosage = dosage;
         this.frequency = frequency;
         this.notificationTimes = notificationTimes != null ? notificationTimes : new ArrayList<>();
         this.sideEffects = sideEffects;
+        this.duration = duration;  // Set duration
+        this.durationUnit = durationUnit;  // Set duration unit
     }
 
     // Legacy constructor for backward compatibility
-    public Medication(long id, String name, String dosage, String frequency, String time, String sideEffects) {
+    public Medication(long id, String name, String dosage, String frequency, String time, String sideEffects, String duration, String durationUnit) {
         this.id = id;
         this.name = name;
         this.dosage = dosage;
@@ -35,8 +40,28 @@ public class Medication {
             this.notificationTimes.add(time);
         }
         this.sideEffects = sideEffects;
+        this.duration = duration;  // Set duration
+        this.durationUnit = durationUnit;  // Set duration unit
     }
 
+    // Getters and setters for duration and durationUnit
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getDurationUnit() {
+        return durationUnit;
+    }
+
+    public void setDurationUnit(String durationUnit) {
+        this.durationUnit = durationUnit;
+    }
+
+    // Getter and setter methods for other fields
     public String getName() {
         return name;
     }
@@ -69,13 +94,11 @@ public class Medication {
         this.notificationTimes = notificationTimes;
     }
 
-    // Legacy method for backward compatibility
+    // Legacy methods for backward compatibility
     public String getTime() {
-        return notificationTimes != null && !notificationTimes.isEmpty() ?
-                notificationTimes.get(0) : "";
+        return notificationTimes != null && !notificationTimes.isEmpty() ? notificationTimes.get(0) : "";
     }
 
-    // Legacy method for backward compatibility
     public void setTime(String time) {
         if (this.notificationTimes == null) {
             this.notificationTimes = new ArrayList<>();

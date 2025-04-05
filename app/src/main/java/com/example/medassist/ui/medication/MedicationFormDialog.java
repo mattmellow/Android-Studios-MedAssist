@@ -18,6 +18,7 @@ public class MedicationFormDialog extends ReminderFormDialog {
     private Spinner doseUnitSpinner;
 
     private Spinner durationUnitSpinner;
+    private EditText durationEditText;  // Added duration EditText
     private EditText sideEffectsEditText;
     private RadioGroup foodRelationRadioGroup;
     private Medication medicationToEdit;  // Store the medication to edit
@@ -38,7 +39,8 @@ public class MedicationFormDialog extends ReminderFormDialog {
         // Initialize specific fields for medication
         medicationAmountEditText = view.findViewById(R.id.medicationAmountEditText);
         doseUnitSpinner = view.findViewById(R.id.doseUnitSpinner);
-        durationUnitSpinner = view.findViewById(R.id.durationUnitSpinner);
+        durationUnitSpinner = view.findViewById(R.id.durationUnitSpinner);  // Initialize duration spinner
+        durationEditText = view.findViewById(R.id.durationEditText);  // Initialize duration EditText
         sideEffectsEditText = view.findViewById(R.id.medicationSideEffectsEditText);
         foodRelationRadioGroup = view.findViewById(R.id.foodRelationRadioGroup);
 
@@ -93,6 +95,12 @@ public class MedicationFormDialog extends ReminderFormDialog {
             }
         }
 
+        // Populate duration fields (if available)
+        if (medication.getDuration() != null) {
+            durationEditText.setText(String.valueOf(medication.getDuration()));
+            selectSpinnerItemByValue(durationUnitSpinner, medication.getDurationUnit());
+        }
+
         // Populate notification times if available
         List<String> times = medication.getNotificationTimes();
     }
@@ -128,11 +136,15 @@ public class MedicationFormDialog extends ReminderFormDialog {
             foodRelation = "After";
         }
 
+        // Get duration data
+        String duration = durationEditText.getText().toString().trim();
+        String durationUnit = durationUnitSpinner.getSelectedItem().toString();
+
         // Validate inputs
-        if (!name.isEmpty() && !amount.isEmpty() && !selectedTimes.isEmpty()) {
-            // Notify the listener with the form data (pass all 5 arguments)
+        if (!name.isEmpty() && !amount.isEmpty() && !selectedTimes.isEmpty() && !duration.isEmpty()) {
+            // Notify the listener with the form data (pass the duration and durationUnit as extra parameters)
             if (listener != null) {
-                listener.onReminderAdded(name, dosage, frequency, selectedTimes, sideEffects, foodRelation);
+                listener.onReminderAdded(name, dosage, frequency, selectedTimes, sideEffects, foodRelation, duration, durationUnit);
                 dismiss();
             }
         } else {

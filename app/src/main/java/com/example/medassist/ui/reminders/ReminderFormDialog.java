@@ -42,7 +42,7 @@ public abstract class ReminderFormDialog extends DialogFragment {
     protected int layoutResourceId;
 
     public interface OnReminderAddedListener {
-        void onReminderAdded(String name, String dosage, String frequency, List<String> times, String sideEffects, String foodRelation);
+        void onReminderAdded(String name, String dosage, String frequency, List<String> times, String sideEffects, String foodRelation, String duration, String durationUnit);
     }
 
     public void setOnReminderAddedListener(OnReminderAddedListener listener) {

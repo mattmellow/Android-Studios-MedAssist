@@ -22,7 +22,6 @@ public class MedicationRepository extends ReminderRepository {
         super(context);
     }
 
-    // Save a medication to Firebase
     public void saveMedication(Medication medication, OnOperationCompleteListener listener) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -32,10 +31,12 @@ public class MedicationRepository extends ReminderRepository {
         }
 
         String userId = currentUser.getUid();
-        String dateStr = medication.getDate().toString();
         String medId = String.valueOf(medication.getId());
 
-        // Create a map of medication-specific data
+        // Get today's date and add it to the medication data
+        String currentDate = LocalDate.now().toString();
+
+        // Create a map of medication-specific data, now including the date, duration, and durationUnit as part of the medication details
         Map<String, Object> medData = new HashMap<>();
         medData.put("name", medication.getName());
         medData.put("dosage", medication.getDosage());
@@ -43,10 +44,14 @@ public class MedicationRepository extends ReminderRepository {
         medData.put("notificationTimes", medication.getNotificationTimes());
         medData.put("sideEffects", medication.getSideEffects());
         medData.put("foodRelation", medication.getFoodRelation());
+        medData.put("date", currentDate);  // Add today's date as part of the medication details
+        medData.put("duration", medication.getDuration());  // Add duration of medication
+        medData.put("durationUnit", medication.getDurationUnit());  // Add duration unit (e.g., "days", "weeks")
 
         // Call the save method from the base class
-        saveReminder(medData, userId, dateStr, medId, listener);
+        saveReminder(medData, userId, currentDate, medId, listener);
     }
+
 
     // Load medications for a specific date
     public void loadMedicationsForDate(LocalDate date, OnRemindersLoadedListener listener) {
@@ -103,8 +108,13 @@ public class MedicationRepository extends ReminderRepository {
                 }
             }
 
+            //VERY VERY VERY TEMPORARILY FOR COMPILATION SAKE
+            String duration = "3";
+            String durationUnit = "days";
+
+
             if (name != null && dosage != null && frequency != null && id != null) {
-                Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects);
+                Medication medication = new Medication(id, name, dosage, frequency, notificationTimes, sideEffects, duration, durationUnit);
                 medication.setFoodRelation(foodRelation);
                 // Add the medication data as a Map instead of a Medication object
                 Map<String, Object> medData = new HashMap<>();

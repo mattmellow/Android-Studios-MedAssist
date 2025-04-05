@@ -75,17 +75,17 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void showAddMedicationDialog() {
-        DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation) -> {
+        DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
             // Generate unique ID
             long id = System.currentTimeMillis();
 
-// Create new medication with the list of times
-            Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects);
+            // Create new medication with the list of times, duration and duration unit
+            Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects, duration, durationUnit);
 
-// Set the food relation
+            // Set the food relation
             medication.setFoodRelation(foodRelation);
 
-// Set the date
+            // Set the date
             medication.setDate(datePickerFragment.getSelectedDate());
             // Add to view model
             medicationViewModel.addMedication(medication);
@@ -134,7 +134,7 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void showEditMedicationDialog(Medication medication) {
-        DialogHelper.showEditMedicationDialog(this, medication, (name, dosage, frequency, times, sideEffects, foodRelation) -> {
+        DialogHelper.showEditMedicationDialog(this, medication, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
             // Update medication with new values
             medication.setName(name);
             medication.setDosage(dosage);
@@ -142,6 +142,8 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
             medication.setNotificationTimes(times);
             medication.setSideEffects(sideEffects);
             medication.setFoodRelation(foodRelation);
+            medication.setDuration(duration);  // Set new duration value
+            medication.setDurationUnit(durationUnit);  // Set new duration unit value
 
             // Update in view model
             medicationViewModel.updateMedication(medication);
