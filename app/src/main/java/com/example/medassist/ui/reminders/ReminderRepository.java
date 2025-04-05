@@ -33,25 +33,25 @@ public abstract class ReminderRepository {
     }
 
     // Save reminder to Firebase - common logic
-    protected void saveReminder(Map<String, Object> reminderData, String userId, String dateStr, String reminderId, OnOperationCompleteListener listener) {
+    protected void saveReminder(Map<String, Object> reminderData, String userId, String category, String dateStr, String reminderId, OnOperationCompleteListener listener) {
         if (userId == null) {
             listener.onError("Please log in to save reminder");
             return;
         }
 
-        mDatabase.child("reminders").child(userId).child(dateStr).child(reminderId).setValue(reminderData)
+        mDatabase.child("reminders").child(userId).child(category).child(dateStr).child(reminderId).setValue(reminderData)
                 .addOnSuccessListener(aVoid -> listener.onSuccess())
                 .addOnFailureListener(e -> listener.onError(e.getMessage()));
     }
 
     // Load all reminders (no filtering by date)
-    protected void loadAllReminders(String userId, OnRemindersLoadedListener listener) {
+    protected void loadAllReminders(String userId, String category, OnRemindersLoadedListener listener) {
         if (userId == null) {
             listener.onError("User not logged in");
             return;
         }
 
-        mDatabase.child("reminders").child(userId)
+        mDatabase.child("reminders").child(userId).child(category)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -70,13 +70,13 @@ public abstract class ReminderRepository {
     protected abstract List<Map<String, Object>> processDataSnapshot(DataSnapshot dataSnapshot);
 
     // Delete reminder from Firebase - common logic
-    protected void deleteReminder(String userId, String dateStr, String reminderId, OnOperationCompleteListener listener) {
+    protected void deleteReminder(String userId, String category, String dateStr, String reminderId, OnOperationCompleteListener listener) {
         if (userId == null) {
             listener.onError("User not logged in");
             return;
         }
 
-        mDatabase.child("reminders").child(userId).child(dateStr).child(reminderId).removeValue()
+        mDatabase.child("reminders").child(userId).child(category).child(dateStr).child(reminderId).removeValue()
                 .addOnSuccessListener(aVoid -> listener.onSuccess())
                 .addOnFailureListener(e -> listener.onError(e.getMessage()));
     }
