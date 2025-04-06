@@ -3,6 +3,7 @@ package com.example.medassist.ui.appointment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -116,8 +117,12 @@ public class AppointmentFormDialog extends ReminderFormDialog {
 
         if (!clinicName.isEmpty() && !location.isEmpty() && !appointmentStart.isEmpty() && !appointmentEnd.isEmpty()) {
             if (listener != null) {
+                Log.d("asd", "asd"+listener);
                 listener.onAppointmentAdded(clinicName, location, appointmentStart, appointmentEnd, frequency, repeatAmount, repeatUnit, description);
                 dismiss();
+            }
+            else {
+                Log.d("asd", "asd");
             }
         } else {
             Toast.makeText(getContext(), "Please fill in all the required fields", Toast.LENGTH_SHORT).show();
