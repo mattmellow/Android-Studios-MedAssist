@@ -44,14 +44,10 @@ public class TransformFragment extends Fragment {
         View root = binding.getRoot();
 
         // Initialize views from your home layout
-        ImageButton addMedButton = binding.addMedButton; // These IDs must match your XML
         CardView appointmentCard = binding.appointmentViewCard;
         CardView exerciseCard = binding.exerciseCard;
 
         // Set click listeners
-        addMedButton.setOnClickListener(v ->
-                navigateTo(R.id.nav_medication));
-
         appointmentCard.setOnClickListener(v ->
                 navigateTo(R.id.nav_appointment));
 
