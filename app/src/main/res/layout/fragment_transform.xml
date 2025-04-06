@@ -54,8 +54,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sf_pro_text_medium"
-                        android:textColor="@color/black"
                         android:text="@string/medicine_1"
+                        android:textColor="@color/black"
                         android:textSize="16sp" />
                     <TextView
                         android:layout_width="match_parent"
@@ -86,17 +86,7 @@
                         android:text="@string/medicine2_time"/>
                 </LinearLayout>
 
-                <!-- "+" Button to Add Medication -->
-                <ImageButton
-                    android:id="@+id/addMedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:scaleType="fitEnd"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/add_medication"
-                    android:src="@drawable/add_circle"/>
+
             </LinearLayout>
         </ScrollView>
     </androidx.cardview.widget.CardView>
