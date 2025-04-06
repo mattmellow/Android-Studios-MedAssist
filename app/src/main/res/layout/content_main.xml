@@ -24,18 +24,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
-            android:textSize="25sp"
-            android:fontFamily="@font/sf_pro_text_medium"
-            android:textColor="@color/darkgrey" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/darkgrey"
+            android:textSize="25sp" />
 
         <TextView
             android:id="@+id/titleLine2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/black"
             android:textSize="30sp"
-            android:fontFamily="@font/sf_pro_text_heavy"
-            android:textColor="@color/black"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
