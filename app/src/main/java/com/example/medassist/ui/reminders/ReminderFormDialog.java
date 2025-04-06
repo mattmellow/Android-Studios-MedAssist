@@ -3,6 +3,7 @@ package com.example.medassist.ui.reminders;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -132,7 +133,8 @@ public abstract class ReminderFormDialog extends DialogFragment {
         timePickerContainer.addView(newTimePickerView, timePickerContainer.getChildCount() - 1);
     }
 
-    private void showMaterialTimePicker(TextView targetTextView) {
+    protected void showMaterialTimePicker(TextView targetTextView) {
+        Log.d("TimePicker", "Target view: " + targetTextView);
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
@@ -147,6 +149,8 @@ public abstract class ReminderFormDialog extends DialogFragment {
         materialTimePicker.addOnPositiveButtonClickListener(v -> {
             int selectedHour = materialTimePicker.getHour();
             int selectedMinute = materialTimePicker.getMinute();
+            Log.d("TimePicker", "Selected hour: " + selectedHour + ", minute: " + selectedMinute);
+
             Calendar selectedTime = Calendar.getInstance();
             selectedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
             selectedTime.set(Calendar.MINUTE, selectedMinute);
@@ -154,19 +158,25 @@ public abstract class ReminderFormDialog extends DialogFragment {
             // Format the time
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
             String formattedTime = sdf.format(selectedTime.getTime());
+            Log.d("TimePicker", "Formatted time: " + formattedTime);
+
 
             // Update the text view
             targetTextView.setText(formattedTime);
-
+            Log.d("TimePicker", "in the between: " + targetTextView.getText());
             // Store the selected time
-            String currentText = targetTextView.getText().toString();
+            String currentText = "" + targetTextView.getText();
+            Log.d("TimePicker", "in the asdfaewfawefawef: " + currentText);
+            Log.d("TimePicker", "im herasdasdasde: "+!currentText.equals("Enter time")+selectedTimes.contains(currentText));
             if (!currentText.equals("Enter time") && selectedTimes.contains(currentText)) {
+                Log.d("TimePicker", "inside condition with: ");
                 selectedTimes.remove(currentText);
             }
             selectedTimes.add(formattedTime);
         });
-
+        Log.d("TimePicker", "im here: ");
         materialTimePicker.show(getChildFragmentManager(), "MATERIAL_TIME_PICKER");
+        Log.d("TimePicker", "inside coasdasdsadndition with: ");
     }
 
     protected abstract void submitForm();

@@ -79,5 +79,18 @@
         <item>Weekly</item>
     </string-array>
 
+    <string-array name="appointment_frequency_options">
+        <item>N.A</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Biweekly</item>
+        <item>Monthly</item>
+        <item>Bimonthly</item>
+        <item>Every 4 Months</item>
+        <item>Every 6 Months</item>
+        <item>Annually</item>
+    </string-array>
+
+
 
 </resources>
