@@ -7,14 +7,26 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Workout Name -->
+    <EditText
+        android:id="@+id/etWorkoutName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Workout Name"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <!-- Duration in minutes -->
     <EditText
         android:id="@+id/etDuration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Exercise Duration (minutes)"
+        android:hint="Enter Duration (minutes)"
         android:inputType="number"
+        android:layout_marginTop="16dp"
         android:minHeight="48dp" />
 
+    <!-- Day of the week -->
     <Spinner
         android:id="@+id/spinnerDay"
         android:layout_width="match_parent"
