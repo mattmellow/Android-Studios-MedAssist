@@ -117,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:text="No medications for this day"
                     android:textSize="16sp"
-                    android:textColor="#757575" />
+                    android:textColor="#757575/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
