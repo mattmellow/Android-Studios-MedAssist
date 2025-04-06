@@ -52,6 +52,7 @@
     <string name="swimming">Swimming</string>
     <string name="description_add_exercise">add exercise here ****</string>
     <string name="all_medications">All Medications</string>
+    <string name="all_appointments">All Appointments</string>
     <string-array name="duration_units">
         <item>days</item>
         <item>weeks</item>

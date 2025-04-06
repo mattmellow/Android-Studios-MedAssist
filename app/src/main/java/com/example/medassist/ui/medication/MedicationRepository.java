@@ -92,7 +92,7 @@ public class MedicationRepository extends ReminderRepository {
                                 String foodRelation = medSnapshot.child("foodRelation").getValue(String.class);
                                 String duration = medSnapshot.child("duration").getValue(String.class);  // Duration
                                 String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Duration unit
-                                Long id = Long.parseLong(medSnapshot.getKey()); // Use the key as the ID
+                                String id = medSnapshot.getKey(); // Use the key as the ID
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                                 LocalDate medStartDate = LocalDate.parse(medSnapshot.child("date").getValue(String.class), formatter);  // Duration unit
                                 Log.d("filter", "i am in loop with: " + name + dosage + frequency + sideEffects + foodRelation + duration + durationUnit);
@@ -171,6 +171,7 @@ public class MedicationRepository extends ReminderRepository {
                                 String duration = medSnapshot.child("duration").getValue(String.class);  // Duration
                                 String durationUnit = medSnapshot.child("durationUnit").getValue(String.class);  // Duration unit
                                 Long id = Long.parseLong(medSnapshot.getKey()); // Use the key as the ID
+                                Log.d("die","disssssssse" + id);
 
                                 // Notification times
                                 List<String> notificationTimes = new ArrayList<>();

@@ -129,16 +129,6 @@ public class AppointmentFormDialog extends ReminderFormDialog {
         }
     }
 
-    public void populateFields(Appointment appointment) {
-        clinicNameEditText.setText(appointment.getClinicName());
-        locationEditText.setText(appointment.getLocation());
-        appointmentStartEditText.setText(appointment.getAppointmentStart());
-        appointmentEndEditText.setText(appointment.getAppointmentEnd());
-        frequencySpinner.setSelection(getSpinnerPosition(frequencySpinner, appointment.getFrequency()));
-        repeatAmountEditText.setText(appointment.getRepeatAmount());
-        repeatUnitSpinner.setSelection(getSpinnerPosition(repeatUnitSpinner, appointment.getRepeatUnit()));
-        descriptionEditText.setText(appointment.getDescription());
-    }
 
     private int getSpinnerPosition(Spinner spinner, String value) {
         for (int i = 0; i < spinner.getCount(); i++) {
