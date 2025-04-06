@@ -24,8 +24,10 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.medassist.databinding.ActivityMainBinding;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.appcompat.widget.PopupMenu;
 
@@ -36,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this);
+        }
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestNotificationPermission();
@@ -56,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
                         NavController navController = Navigation.findNavController(MainActivity.this,
                                 R.id.nav_host_fragment_content_main);
                         navController.navigate(R.id.nav_settings);
+                        return true;
+                    }
+                    else if (item.getItemId() == R.id.nav_all_medications) {
+                        NavController navController = Navigation.findNavController(MainActivity.this,
+                                R.id.nav_host_fragment_content_main);
+                        navController.navigate(R.id.nav_all_medications);
                         return true;
                     }
                     return false;
@@ -100,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
                     titleLine1.setText("Account");
                     titleLine2.setText("Settings");
                 }
+                else if (destId == R.id.nav_all_medications) {
+                    titleLine1.setText("Manage your");
+                    titleLine2.setText("Medications");
+                }
                 else {
                     titleLine1.setText("Welcome back,");
                     titleLine2.setText("User");
@@ -110,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
         if (navigationView != null) {
             mAppBarConfiguration = new AppBarConfiguration.Builder(
-                    R.id.nav_transform, R.id.nav_medication, R.id.nav_exercise, R.id.nav_settings, R.id.nav_appointment)
+                    R.id.nav_transform, R.id.nav_medication, R.id.nav_exercise, R.id.nav_settings, R.id.nav_appointment, R.id.nav_all_medications)
                     .setOpenableLayout(binding.drawerLayout)
                     .build();
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
@@ -157,6 +176,10 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.nav_settings) {
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
             navController.navigate(R.id.nav_settings);
+        }
+        else if (item.getItemId() == R.id.nav_all_medications) {
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.nav_all_medications);
         }
         return super.onOptionsItemSelected(item);
     }

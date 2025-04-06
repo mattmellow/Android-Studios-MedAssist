@@ -1,6 +1,7 @@
 package com.example.medassist.ui.medication;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,17 +76,17 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void showAddMedicationDialog() {
-        DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation) -> {
+        DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
             // Generate unique ID
             long id = System.currentTimeMillis();
 
-// Create new medication with the list of times
-            Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects);
+            // Create new medication with the list of times, duration and duration unit
+            Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects, duration, durationUnit);
 
-// Set the food relation
+            // Set the food relation
             medication.setFoodRelation(foodRelation);
 
-// Set the date
+            // Set the date
             medication.setDate(datePickerFragment.getSelectedDate());
             // Add to view model
             medicationViewModel.addMedication(medication);
@@ -112,29 +113,25 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void setupMedicationList() {
-        // Create adapter with empty list initially
         medicationAdapter = new MedicationAdapter(new ArrayList<>());
         binding.medicationRecyclerView.setAdapter(medicationAdapter);
         binding.medicationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Handle click events
         medicationAdapter.setOnMedicationClickListener(new MedicationAdapter.OnMedicationClickListener() {
             @Override
             public void onMedicationClick(Medication medication) {
-                // This could be expanded to show details or edit dialog
                 Toast.makeText(getContext(), "Selected: " + medication.getName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onMedicationLongClick(Medication medication, int position) {
-                // Show delete option
                 showDeleteConfirmationDialog(medication);
             }
         });
     }
 
     private void showEditMedicationDialog(Medication medication) {
-        DialogHelper.showEditMedicationDialog(this, medication, (name, dosage, frequency, times, sideEffects, foodRelation) -> {
+        DialogHelper.showEditMedicationDialog(this, medication, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
             // Update medication with new values
             medication.setName(name);
             medication.setDosage(dosage);
@@ -142,6 +139,8 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
             medication.setNotificationTimes(times);
             medication.setSideEffects(sideEffects);
             medication.setFoodRelation(foodRelation);
+            medication.setDuration(duration);  // Set new duration value
+            medication.setDurationUnit(durationUnit);  // Set new duration unit value
 
             // Update in view model
             medicationViewModel.updateMedication(medication);
@@ -149,11 +148,9 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void observeViewModel() {
-        // Observe medications from ViewModel
         medicationViewModel.getMedications().observe(getViewLifecycleOwner(), medications -> {
             medicationAdapter.updateMedications(medications);
 
-            // Toggle empty state visibility
             if (medications.isEmpty()) {
                 binding.emptyStateLayout.setVisibility(View.VISIBLE);
                 binding.medicationRecyclerView.setVisibility(View.GONE);
@@ -163,18 +160,17 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
             }
         });
 
-        // Observe loading state
-        medicationViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Could show loading indicator here if needed
-        });
-
-        // Observe error messages
-        medicationViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMsg -> {
-            if (errorMsg != null && !errorMsg.isEmpty()) {
-                Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
-            }
-        });
+        LocalDate selectedDate = datePickerFragment.getSelectedDate();
+        Log.d("filter","i am in med frag observe with date: " + selectedDate);
+        // If selectedDate is null, use today's date as a fallback
+        if (selectedDate == null) {
+            selectedDate = LocalDate.now();
+        }
+        Log.d("filter","i am in med frag observe with date: " + selectedDate);
+        medicationViewModel.loadMedications(selectedDate);  // Pass the selected date
     }
+
+
 
     private void showDeleteConfirmationDialog(Medication medication) {
         DialogHelper.showDeleteConfirmationDialog(getContext(), medication, () -> {

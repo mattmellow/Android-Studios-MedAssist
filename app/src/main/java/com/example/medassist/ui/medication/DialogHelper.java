@@ -1,5 +1,5 @@
 package com.example.medassist.ui.medication;
-
+import com.example.medassist.ui.reminders.ReminderFormDialog;
 import android.app.AlertDialog;
 import android.content.Context;
 
@@ -34,9 +34,9 @@ public class DialogHelper {
      * @param fragment The parent fragment
      * @param onMedicationAdded Callback for when a medication is added
      */
-    public static void showAddMedicationDialog(MedicationFragment fragment, MedicationFormDialog.OnMedicationAddedListener onMedicationAdded) {
+    public static void showAddMedicationDialog(MedicationFragment fragment, ReminderFormDialog.OnReminderAddedListener onMedicationAdded) {
         MedicationFormDialog dialog = new MedicationFormDialog();
-        dialog.setOnMedicationAddedListener(onMedicationAdded);
+        dialog.setOnReminderAddedListener(onMedicationAdded); // Update listener interface
         dialog.show(fragment.getChildFragmentManager(), "AddMedicationDialog");
     }
 
@@ -47,10 +47,10 @@ public class DialogHelper {
      * @param medication The medication to edit
      * @param onMedicationEdited Callback for when a medication is edited
      */
-    public static void showEditMedicationDialog(MedicationFragment fragment, Medication medication, MedicationFormDialog.OnMedicationAddedListener onMedicationEdited) {
+    public static void showEditMedicationDialog(MedicationFragment fragment, Medication medication, ReminderFormDialog.OnReminderAddedListener onMedicationEdited) {
         MedicationFormDialog dialog = new MedicationFormDialog();
-        dialog.setMedication(medication); // You'll need to implement this method in MedicationFormDialog
-        dialog.setOnMedicationAddedListener(onMedicationEdited);
+        dialog.setMedication(medication); // Implement this method in MedicationFormDialog
+        dialog.setOnReminderAddedListener(onMedicationEdited); // Update listener interface
         dialog.show(fragment.getChildFragmentManager(), "EditMedicationDialog");
     }
 }

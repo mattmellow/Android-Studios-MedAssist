@@ -50,6 +50,8 @@
     <string name="progress_number">60%</string>
     <string name="brisk_walking">Brisk Walking 3km</string>
     <string name="swimming">Swimming</string>
+    <string name="description_add_exercise">add exercise here ****</string>
+    <string name="all_medications">All Medications</string>
     <string-array name="duration_units">
         <item>days</item>
         <item>weeks</item>
@@ -63,4 +65,32 @@
         <item>tbsp</item>
         <item>tsp</item>
     </string-array>
+
+
+    <!-- spinner card -->
+    <string-array name="frequency_options">
+        <item>Once daily</item>
+        <item>Twice daily</item>
+        <item>Three times daily</item>
+        <item>Four times daily</item>
+        <item>Every morning</item>
+        <item>Every night</item>
+        <item>Every other day</item>
+        <item>Weekly</item>
+    </string-array>
+
+    <string-array name="appointment_frequency_options">
+        <item>N.A</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Biweekly</item>
+        <item>Monthly</item>
+        <item>Bimonthly</item>
+        <item>Every 4 Months</item>
+        <item>Every 6 Months</item>
+        <item>Annually</item>
+    </string-array>
+
+
+
 </resources>
