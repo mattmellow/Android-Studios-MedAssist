@@ -141,8 +141,8 @@ public class NotificationHelper {
      * @param timeIndex Time slot index
      * @return Unique notification ID
      */
-    private static int generateNotificationId(long medicationId, int timeIndex) {
-        return (int) (medicationId * 100 + timeIndex);
+    private static int generateNotificationId(String medicationId, int timeIndex) {
+        return medicationId.hashCode() * 31 + timeIndex;
     }
 
     private static int getIntervalTypeForFrequency(String frequency) {
@@ -173,7 +173,7 @@ public class NotificationHelper {
      * @param context Context
      * @param medicationId ID of the medication
      */
-    public static void cancelMedicationReminder(Context context, long medicationId) {
+    public static void cancelMedicationReminder(Context context, String medicationId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) return;
 
