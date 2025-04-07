@@ -222,7 +222,7 @@ public class MedicationRepository extends ReminderRepository {
         }
 
         // Calculate the end date based on adjusted duration
-        LocalDate medicationEndDate = medicationStartDate.plusDays(duration);
+        LocalDate medicationEndDate = medicationStartDate.plusDays(duration - 1);
 
         // Check if the selected date is within the medication's active period
         boolean isWithinDuration = !selectedDate.isBefore(medicationStartDate) && !selectedDate.isAfter(medicationEndDate);

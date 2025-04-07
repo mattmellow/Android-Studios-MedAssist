@@ -153,6 +153,16 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
             NavigationUI.setupWithNavController(bottomNavigationView, navController);
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
+
+                if (item.getItemId() == R.id.nav_transform) {
+                    // Ensure we always return to Home (even if already there), clearing intermediate stack
+                    navController.popBackStack(R.id.nav_transform, false);
+                }
+
+                return handled;
+            });
         }
 
         // Hide the default title in the toolbar

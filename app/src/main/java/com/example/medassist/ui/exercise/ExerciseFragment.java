@@ -21,19 +21,24 @@ import com.example.medassist.databinding.FragmentExerciseBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class ExerciseFragment extends Fragment {
 
     private FragmentExerciseBinding binding;
     private ExerciseViewModel exerciseViewModel;
-    // DAILY_TARGET_MINUTES remains the overall maximum per day (12 hours)
-    private static final int DAILY_TARGET_MINUTES = 720; // 12 hours
+    private ScheduleAdapter scheduleAdapter;
+    private List<ExerciseViewModel.Workout> todayWorkouts;
 
-    // List of quick-add exercises (name and default duration)
-    private final ArrayList<QuickExercise> quickExercises = new ArrayList<>();
+    // Define the order for days.
+    private static final List<String> DAY_ORDER = Arrays.asList(
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    );
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,143 +46,178 @@ public class ExerciseFragment extends Fragment {
         binding = FragmentExerciseBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Populate quick exercise list (could be fetched from a resource file or backend)
-        quickExercises.add(new QuickExercise("Swimming", 60));
-        quickExercises.add(new QuickExercise("Jogging", 30));
-        quickExercises.add(new QuickExercise("Badminton", 60));
+        // Set up the schedule RecyclerView (bottom card)
+        scheduleAdapter = new ScheduleAdapter();
+        binding.recyclerExercises.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerExercises.setAdapter(scheduleAdapter);
 
-        // Setup RecyclerView with quick exercises
-        QuickExerciseAdapter adapter = new QuickExerciseAdapter(quickExercises);
-        binding.recyclerExercises.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-        binding.recyclerExercises.setAdapter(adapter);
-
-        // Observe the exercise data in the ViewModel
-        exerciseViewModel.getExerciseData().observe(getViewLifecycleOwner(), data -> {
-            // Update the BarChartView with the latest exercise data
-            binding.barChartView.setExerciseData(data);
-            updateActiveTimeDisplay(data);
+        // Observe changes in the workouts list
+        exerciseViewModel.getScheduledWorkouts().observe(getViewLifecycleOwner(), workouts -> {
+            // Sort workouts by day order
+            List<ExerciseViewModel.Workout> sortedWorkouts = new ArrayList<>(workouts);
+            Collections.sort(sortedWorkouts, new Comparator<ExerciseViewModel.Workout>() {
+                @Override
+                public int compare(ExerciseViewModel.Workout w1, ExerciseViewModel.Workout w2) {
+                    int i1 = DAY_ORDER.indexOf(w1.day);
+                    int i2 = DAY_ORDER.indexOf(w2.day);
+                    return Integer.compare(i1, i2);
+                }
+            });
+            // Update schedule list and bar chart with sorted list.
+            scheduleAdapter.setWorkouts(sortedWorkouts);
+            binding.barChartView.setWorkouts(sortedWorkouts);
+            updateTodayWorkoutSection(sortedWorkouts);
+            updateActiveTimeAndProgress(sortedWorkouts);
         });
 
-        // Set click listener for adding new (custom) exercise with confirmation and cap check
-        binding.btnAddExercise.setOnClickListener(v -> showAddExerciseDialog());
+        // "Add custom workout" button
+        binding.btnAddExercise.setOnClickListener(v -> showAddWorkoutDialog());
 
-        // Add regular exercise buttons with confirmation pop-ups
-        binding.btnRunning.setOnClickListener(v -> showConfirmationDialog("Running (30 mins)", 30));
-        binding.btnSwimming.setOnClickListener(v -> showConfirmationDialog("Swimming (60 mins)", 60));
-        binding.btnGym.setOnClickListener(v -> showConfirmationDialog("Gym (60 mins)", 60));
+        // Checkbox for marking today's workout(s) complete.
+        binding.chkMarkAsComplete.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (todayWorkouts != null) {
+                // When checkbox is toggled, mark all today’s workouts as complete/incomplete.
+                for (ExerciseViewModel.Workout w : todayWorkouts) {
+                    exerciseViewModel.setWorkoutCompleted(w, isChecked);
+                }
+            }
+        });
 
         return root;
     }
 
-    private void showConfirmationDialog(String exerciseName, int minutesToAdd) {
-        String today = getToday();
-        new AlertDialog.Builder(getContext())
-                .setTitle("Confirm Addition")
-                .setMessage("Are you sure you want to add " + exerciseName + " for " + today + "?")
-                .setPositiveButton("Yes", (dialog, which) -> updateExerciseData(today, minutesToAdd))
-                .setNegativeButton("No", null)
-                .show();
-    }
-
-    private void showAddExerciseDialog() {
-        // Inflate the custom layout for the dialog (from dialog_add_exercise.xml)
+    /**
+     * Show dialog to add a new workout with name, day, and duration.
+     */
+    private void showAddWorkoutDialog() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.dialog_add_exercise, null);
 
+        final EditText etWorkoutName = dialogView.findViewById(R.id.etWorkoutName);
         final EditText etDuration = dialogView.findViewById(R.id.etDuration);
         final Spinner spinnerDay = dialogView.findViewById(R.id.spinnerDay);
 
-        // Setup spinner for day selection
-        String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, daysOfWeek);
+        // Populate spinner with days of the week
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, DAY_ORDER);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDay.setAdapter(spinnerAdapter);
 
         new AlertDialog.Builder(getContext())
-                .setTitle("Add Exercise")
+                .setTitle("Add Workout")
                 .setView(dialogView)
                 .setPositiveButton("Add", (dialog, which) -> {
+                    String workoutName = etWorkoutName.getText().toString().trim();
                     String durationStr = etDuration.getText().toString().trim();
                     String selectedDay = spinnerDay.getSelectedItem().toString();
-                    if (!durationStr.isEmpty()) {
-                        int exerciseDuration = Integer.parseInt(durationStr);
-                        updateExerciseData(selectedDay, exerciseDuration);
-                    } else {
-                        Toast.makeText(getContext(), "Please enter a valid duration", Toast.LENGTH_SHORT).show();
+
+                    if (workoutName.isEmpty()) {
+                        Toast.makeText(getContext(), "Please enter a valid workout name", Toast.LENGTH_SHORT).show();
+                        return;
                     }
+                    if (durationStr.isEmpty()) {
+                        Toast.makeText(getContext(), "Please enter a valid duration", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int duration = Integer.parseInt(durationStr);
+                    ExerciseViewModel.Workout workout = new ExerciseViewModel.Workout(workoutName, selectedDay, duration);
+                    exerciseViewModel.addWorkout(workout);
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    // This method now checks if the new addition would exceed 12 hours;
-    // if so, a warning dialog is shown instead of adding.
-    private void updateExerciseData(String day, int exerciseDuration) {
-        Map<String, Integer> currentData = exerciseViewModel.getExerciseData().getValue();
-        int current = currentData != null ? currentData.getOrDefault(day, 0) : 0;
-        if (current >= DAILY_TARGET_MINUTES) {
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Warning")
-                    .setMessage("Slow down so you don't get an injury.")
-                    .setPositiveButton("OK", null)
-                    .show();
-            return;
-        }
-        exerciseViewModel.addExerciseData(day, exerciseDuration);
-    }
-
-    private void updateActiveTimeDisplay(Map<String, Integer> exerciseData) {
-        // Update active time display (total minutes)
-        int totalMinutes = 0;
-        for (int duration : exerciseData.values()) {
-            totalMinutes += duration;
-        }
-        int hours = totalMinutes / 60;
-        int minutes = totalMinutes % 60;
-        String formattedTime = String.format(Locale.getDefault(), "%d:%02d", hours, minutes);
-        binding.tvActiveDuration.setText(formattedTime);
-
-        // Calculate weekly progress from Monday up to today
-        // For weekly progress, only count up to 2 hours (120 minutes) per day.
-        String[] weekDays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    /**
+     * Update the middle section ("Today's Activity" and checkbox).
+     * Gathers all workouts scheduled for today and displays them as text.
+     */
+    private void updateTodayWorkoutSection(List<ExerciseViewModel.Workout> workouts) {
         String today = getToday();
-        int todayIndex = 0;
-        for (int i = 0; i < weekDays.length; i++) {
-            if (weekDays[i].equals(today)) {
-                todayIndex = i;
-                break;
+        todayWorkouts = new ArrayList<>();
+        for (ExerciseViewModel.Workout w : workouts) {
+            if (w.day.equalsIgnoreCase(today)) {
+                todayWorkouts.add(w);
             }
         }
-        int weekMinutes = 0;
-        for (int i = 0; i <= todayIndex; i++) {
-            // Only count a maximum of 120 minutes per day for weekly percentage
-            int dayMinutes = exerciseData.getOrDefault(weekDays[i], 0);
-            weekMinutes += Math.min(dayMinutes, 120);
+        if (todayWorkouts.isEmpty()) {
+            binding.tvTodayActivity.setText("No workout scheduled today");
+            binding.chkMarkAsComplete.setVisibility(View.GONE);
+        } else {
+            // Build a string listing each workout: "Football - 120 mins"
+            StringBuilder sb = new StringBuilder();
+            for (ExerciseViewModel.Workout w : todayWorkouts) {
+                sb.append(w.name).append(" - ").append(w.duration).append(" mins\n");
+            }
+            binding.tvTodayActivity.setText(sb.toString().trim());
+            binding.chkMarkAsComplete.setVisibility(View.VISIBLE);
+            // Checkbox is checked only if all today workouts are complete.
+            boolean allComplete = true;
+            for (ExerciseViewModel.Workout w : todayWorkouts) {
+                if (!w.isCompleted) {
+                    allComplete = false;
+                    break;
+                }
+            }
+            binding.chkMarkAsComplete.setChecked(allComplete);
         }
-        // The weekly target is now 2 hours per day up to today
-        int weekTarget = 120 * (todayIndex + 1);
-        int percentage = (int) ((weekMinutes / (float) weekTarget) * 100);
-        binding.tvProgressPercentage.setText("Progress: " + percentage + "%");
+    }
 
-        // Get today's exercise minutes (actual, not capped)
-        int todayMinutes = exerciseData.getOrDefault(today, 0);
+    /**
+     * Update the top card: active time and progress (percentage of days fully completed).
+     */
+    private void updateActiveTimeAndProgress(List<ExerciseViewModel.Workout> workouts) {
+        int totalMinutes = 0;
+        for (ExerciseViewModel.Workout w : workouts) {
+            totalMinutes += w.duration;
+        }
+        int hours = totalMinutes / 60;
+        int mins = totalMinutes % 60;
+        String formattedTime = String.format(Locale.getDefault(), "%d:%02d", hours, mins);
+        binding.tvActiveDuration.setText(formattedTime);
 
-        // Set motivational message based on conditions:
-        // If weekly progress is 100%: "Good job staying active!"
-        // Else if today is above 2 hours (120 minutes): "Good job staying active today!"
-        // Otherwise: "Remember to stay active!"
+        String[] allDays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        int daysWithWorkouts = 0;
+        int daysFullyCompleted = 0;
+
+        for (String day : allDays) {
+            List<ExerciseViewModel.Workout> dayWorkouts = new ArrayList<>();
+            for (ExerciseViewModel.Workout w : workouts) {
+                if (w.day.equalsIgnoreCase(day)) {
+                    dayWorkouts.add(w);
+                }
+            }
+            if (!dayWorkouts.isEmpty()) {
+                daysWithWorkouts++;
+                boolean allCompleted = true;
+                for (ExerciseViewModel.Workout w : dayWorkouts) {
+                    if (!w.isCompleted) {
+                        allCompleted = false;
+                        break;
+                    }
+                }
+                if (allCompleted) {
+                    daysFullyCompleted++;
+                }
+            }
+        }
+
+        int progressPercent = 0;
+        if (daysWithWorkouts > 0) {
+            progressPercent = (int) ((daysFullyCompleted / (float) daysWithWorkouts) * 100);
+        }
+        binding.tvProgressPercentage.setText("Progress: " + progressPercent + "%");
+
         String message;
-        if (percentage == 100) {
-            message = "Good job staying active!";
-        } else if (todayMinutes >= 120) {
-            message = "Good job staying active today!";
+        if (progressPercent == 100 && daysWithWorkouts > 0) {
+            message = "Good job completing all your workouts!";
+        } else if (daysFullyCompleted > 0) {
+            message = "Keep going, you're doing great!";
         } else {
             message = "Remember to stay active!";
         }
         binding.tvActivityMessage.setText(message);
     }
 
-    // Helper method to get today’s day as a String (e.g., "Monday")
     private String getToday() {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
@@ -190,66 +230,60 @@ public class ExerciseFragment extends Fragment {
         binding = null;
     }
 
-    // --- QuickExercise class ---
-    public static class QuickExercise {
-        String name;
-        int defaultDuration;
+    // RecyclerView Adapter for the weekly schedule (bottom card)
+    private class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder> {
 
-        public QuickExercise(String name, int defaultDuration) {
-            this.name = name;
-            this.defaultDuration = defaultDuration;
-        }
-    }
+        private List<ExerciseViewModel.Workout> workouts;
 
-    // --- RecyclerView Adapter for quick-add exercises ---
-    private class QuickExerciseAdapter extends RecyclerView.Adapter<QuickExerciseAdapter.QuickExerciseViewHolder> {
-
-        private final ArrayList<QuickExercise> exercises;
-
-        QuickExerciseAdapter(ArrayList<QuickExercise> exercises) {
-            this.exercises = exercises;
+        public void setWorkouts(List<ExerciseViewModel.Workout> workouts) {
+            // Already sorted before passing in observer
+            this.workouts = workouts;
+            notifyDataSetChanged();
         }
 
         @NonNull
         @Override
-        public QuickExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
-            return new QuickExerciseViewHolder(itemView);
+        public ScheduleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(android.R.layout.simple_list_item_1, parent, false);
+            return new ScheduleViewHolder(itemView);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull QuickExerciseViewHolder holder, int position) {
-            QuickExercise exercise = exercises.get(position);
-            holder.bind(exercise);
+        public void onBindViewHolder(@NonNull ScheduleViewHolder holder, int position) {
+            ExerciseViewModel.Workout workout = workouts.get(position);
+            holder.bind(workout);
         }
 
         @Override
         public int getItemCount() {
-            return exercises.size();
+            return workouts == null ? 0 : workouts.size();
         }
 
-        class QuickExerciseViewHolder extends RecyclerView.ViewHolder {
-
+        class ScheduleViewHolder extends RecyclerView.ViewHolder {
             private final android.widget.TextView textView;
 
-            QuickExerciseViewHolder(@NonNull View itemView) {
+            ScheduleViewHolder(@NonNull View itemView) {
                 super(itemView);
                 textView = itemView.findViewById(android.R.id.text1);
             }
 
-            void bind(QuickExercise exercise) {
-                textView.setText(exercise.name);
-                itemView.setOnClickListener(v -> {
+            void bind(ExerciseViewModel.Workout workout) {
+                String status = workout.isCompleted ? " (Completed)" : "";
+                String display = workout.day + " - " + workout.duration + " mins " + workout.name + status;
+                textView.setText(display);
+
+                // Long press to delete workout
+                itemView.setOnLongClickListener(v -> {
                     new AlertDialog.Builder(getContext())
-                            .setTitle("Add Exercise")
-                            .setMessage("Add " + exercise.name + " (" + exercise.defaultDuration + " minutes) for today?")
-                            .setPositiveButton("Yes", (dialog, which) -> {
-                                String today = getToday();
-                                updateExerciseData(today, exercise.defaultDuration);
-                                Toast.makeText(getContext(), exercise.name + " added", Toast.LENGTH_SHORT).show();
+                            .setTitle("Delete Workout")
+                            .setMessage("Delete \"" + workout.name + "\" from your schedule?")
+                            .setPositiveButton("Delete", (dialog, which) -> {
+                                exerciseViewModel.removeWorkout(workout);
                             })
-                            .setNegativeButton("No", null)
+                            .setNegativeButton("Cancel", null)
                             .show();
+                    return true;
                 });
             }
         }

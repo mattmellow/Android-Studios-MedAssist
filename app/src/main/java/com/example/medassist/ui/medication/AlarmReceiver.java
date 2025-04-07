@@ -1,5 +1,6 @@
 package com.example.medassist.ui.medication;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,13 +8,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.medassist.MainActivity;
 import com.example.medassist.R;
 
+import java.util.Calendar;
+
 public class AlarmReceiver extends BroadcastReceiver {
+    private static final String TAG = "AlarmReceiver";
     public static final String CHANNEL_ID = "medication_channel";
     public static final String MEDICATION_NAME = "medication_name";
     public static final String MEDICATION_DOSAGE = "medication_dosage";
@@ -26,6 +31,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         String medicationDosage = intent.getStringExtra(MEDICATION_DOSAGE);
         int timeIndex = intent.getIntExtra(MEDICATION_TIME_INDEX, 0);
         int notificationId = intent.getIntExtra("notificationId", 0);
+
+        Log.d(TAG, "Received alarm for " + medicationName + ", dose " + (timeIndex + 1));
 
         // Create notification channel for Android O and above
         createNotificationChannel(context);
@@ -53,7 +60,63 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Show notification
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(notificationId, builder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(notificationId, builder.build());
+            Log.d(TAG, "Notification shown for " + medicationName + ", dose " + (timeIndex + 1));
+        }
+
+        // Reschedule for tomorrow if this is a daily medication
+        // This is necessary because we're using exact alarms which don't repeat automatically
+        rescheduleAlarmIfNeeded(context, intent);
+    }
+
+    private void rescheduleAlarmIfNeeded(Context context, Intent originalIntent) {
+        // Check if this alarm should be rescheduled for tomorrow
+        String action = originalIntent.getAction();
+        if (action != null && action.startsWith("com.example.medassist.MEDICATION_REMINDER_")) {
+            // Extract medication ID from action
+            String[] parts = action.split("_");
+            if (parts.length >= 4) {
+                try {
+                    long medicationId = Long.parseLong(parts[3]);
+
+                    // Create a new intent with the same data
+                    Intent newIntent = new Intent(context, AlarmReceiver.class);
+                    newIntent.setAction(originalIntent.getAction());
+                    newIntent.putExtra(MEDICATION_NAME, originalIntent.getStringExtra(MEDICATION_NAME));
+                    newIntent.putExtra(MEDICATION_DOSAGE, originalIntent.getStringExtra(MEDICATION_DOSAGE));
+                    newIntent.putExtra(MEDICATION_TIME_INDEX, originalIntent.getIntExtra(MEDICATION_TIME_INDEX, 0));
+                    newIntent.putExtra("notificationId", originalIntent.getIntExtra("notificationId", 0));
+
+                    // Schedule for tomorrow at the same time
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_YEAR, 1); // Add one day
+
+                    // Keep the hour and minute the same
+                    int timeIndex = originalIntent.getIntExtra(MEDICATION_TIME_INDEX, 0);
+                    int notificationId = originalIntent.getIntExtra("notificationId", 0);
+
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                            context,
+                            notificationId,
+                            newIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    if (alarmManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                calendar.getTimeInMillis(),
+                                pendingIntent
+                        );
+                        Log.d(TAG, "Rescheduled alarm for tomorrow for " +
+                                originalIntent.getStringExtra(MEDICATION_NAME) + ", dose " + (timeIndex + 1));
+                    }
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Error parsing medication ID for rescheduling", e);
+                }
+            }
+        }
     }
 
     private String getTimeDescription(int timeIndex) {
@@ -67,7 +130,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             case 3:
                 return "for fourth dose";
             default:
-                return "";
+                return "for dose #" + (timeIndex + 1);
         }
     }
 
