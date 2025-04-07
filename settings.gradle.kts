@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MedAssist"
+rootProject.name = "MedAssist11"
 include(":app")
  
