@@ -1,27 +1,28 @@
 package com.example.medassist.ui.appointment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.example.medassist.databinding.FragmentAppointmentBinding;
+import com.example.medassist.ui.reminders.ReminderRepository;
+import com.example.medassist.ui.appointment.AppointmentFormDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.example.medassist.databinding.FragmentAppointmentBinding;
 
 public class AppointmentFragment extends Fragment {
 
     private FragmentAppointmentBinding binding;
     private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
 
     @Nullable
     @Override
@@ -30,83 +31,71 @@ public class AppointmentFragment extends Fragment {
         View view = binding.getRoot();
 
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance("https://medassist-fdddd-default-rtdb.asia-southeast1.firebasedatabase.app").getReference();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
-            binding.saveResult.setText("Please sign in to book an appointment.");
-            binding.confirmButton.setEnabled(false);
+            binding.addButton.setEnabled(false);
         } else {
-            binding.confirmButton.setEnabled(true);
+            binding.addButton.setEnabled(true);
         }
 
-        binding.calendarView.setOnDateChangeListener(new android.widget.CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull android.widget.CalendarView view, int year, int month, int dayOfMonth) {
-                String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-                binding.selectedDate.setText("Selected Date: " + selectedDate);
-                binding.saveResult.setText("");
-            }
+        binding.calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+            String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+            binding.selectedDate.setText("Selected Date: " + selectedDate);
         });
 
-        binding.confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveAppointmentToFirebase();
+        binding.addButton.setOnClickListener(v -> {
+            // Open the AppointmentFormDialog to fill in the appointment details
+            AppointmentFormDialog appointmentFormDialog = new AppointmentFormDialog();
+
+            // Get selected date
+            String selectedDate = binding.selectedDate.getText().toString();
+            if (selectedDate.equals("Selected Date: Not Set")) {
+                Toast.makeText(getContext(), "Please select a date before adding an appointment.", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            AppointmentRepository repository = new AppointmentRepository(requireContext());
+
+            appointmentFormDialog.setOnAppointmentAddedListener((clinicName, location, appointmentStart, appointmentEnd, frequency, repeatAmount, repeatUnit, description) -> {
+                String cleanedDate = selectedDate.replace("Selected Date: ", "");
+
+                repository.saveAppointment(
+                        clinicName,
+                        location,
+                        appointmentStart,
+                        appointmentEnd,
+                        frequency,
+                        repeatAmount,
+                        repeatUnit,
+                        description,
+                        cleanedDate,
+                        new ReminderRepository.OnOperationCompleteListener() {
+                            @Override
+                            public void onSuccess() {
+                                binding.progressBar.setVisibility(View.GONE);
+                                Toast.makeText(getContext(), "Appointment saved successfully!", Toast.LENGTH_SHORT).show();
+                                binding.addButton.setEnabled(true);
+                                binding.selectedDate.setText("Selected Date: Not Set");
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+                                binding.progressBar.setVisibility(View.GONE);
+                                Toast.makeText(getContext(), "Failed to save appointment: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                binding.addButton.setEnabled(true);
+                            }
+                        }
+                );
+            });
+
+
+
+            appointmentFormDialog.show(getChildFragmentManager(), "appointment_form_dialog");
         });
+
 
         return view;
-    }
-
-    private void saveAppointmentToFirebase() {
-        String selectedDate = binding.selectedDate.getText().toString();
-        if (selectedDate.equals("Selected Date: Not Set")) {
-            binding.saveResult.setText("Please select a date before confirming.");
-            return;
-        }
-
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.confirmButton.setEnabled(false);
-        binding.saveResult.setText("");
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            binding.progressBar.setVisibility(View.GONE);
-            binding.confirmButton.setEnabled(true);
-            binding.saveResult.setText("Error: User not authenticated.");
-            return;
-        }
-
-        String userId = currentUser.getUid();
-        Map<String, Object> appointmentData = new HashMap<>();
-        appointmentData.put("date", selectedDate.replace("Selected Date: ", "")); // Remove the prefix
-        appointmentData.put("timestamp", System.currentTimeMillis());
-        appointmentData.put("status", "Confirmed");
-
-
-        String appointmentId = mDatabase.child("appointments").child(userId).push().getKey();
-        mDatabase.child("appointments").child(userId).child(appointmentId).setValue(appointmentData)
-                .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Successfully saved
-                        binding.progressBar.setVisibility(View.GONE);
-                        binding.confirmButton.setEnabled(true);
-                        binding.saveResult.setText("Appointment saved successfully!");
-                        // Optionally reset the selected date
-                        binding.selectedDate.setText("Selected Date: Not Set");
-                    }
-                })
-                .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Failed to save
-                        binding.progressBar.setVisibility(View.GONE);
-                        binding.confirmButton.setEnabled(true);
-                        binding.saveResult.setText("Failed to save appointment: " + e.getMessage());
-                    }
-                });
     }
 
     @Override

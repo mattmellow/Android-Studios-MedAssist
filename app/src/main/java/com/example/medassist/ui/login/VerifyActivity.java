@@ -2,39 +2,35 @@ package com.example.medassist.ui.login;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
 import com.example.medassist.R;
 import com.google.firebase.auth.FirebaseAuth;
 
-
-public class VerifyActivity extends AppCompatActivity {
-
+public class VerifyActivity extends BaseAuthActivity {
     private EditText emailInput;
     private Button sendCode;
     private TextView maskedEmailTextView, homePage;
     private static final long RESEND_INTERVAL = 60000;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.login_verify);
+    protected int getLayoutResourceId() {
+        return R.layout.login_verify;
+    }
+
+    @Override
+    protected void initViews() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(insets.getInsets(WindowInsetsCompat.Type.systemBars()).left,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).top,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).right,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
             return insets;
         });
 
@@ -46,17 +42,13 @@ public class VerifyActivity extends AppCompatActivity {
         sendCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String emailAddr = emailInput.getText().toString().trim();
                 if (emailAddr.isEmpty()) {
                     Toast.makeText(VerifyActivity.this, "Please enter your email", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-
                 maskedEmailTextView.setText(maskEmail(emailAddr));
 
-                // Send the reset email to user
                 FirebaseAuth.getInstance().sendPasswordResetEmail(emailAddr)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -72,14 +64,13 @@ public class VerifyActivity extends AppCompatActivity {
         homePage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Return to LoginActivity
                 startActivity(new Intent(VerifyActivity.this, LoginActivity.class));
                 finish();
             }
         });
     }
 
-    private void startCountdownTimer() {// COOLDOWN FUNCTION BEFORE THE USER CAN PRESS THE BUTTON AGAIN
+    private void startCountdownTimer() { // Thecountdown timer
         sendCode.setEnabled(false);
         sendCode.setBackgroundColor(Color.GRAY);
         new CountDownTimer(RESEND_INTERVAL, 1000) {
@@ -97,8 +88,7 @@ public class VerifyActivity extends AppCompatActivity {
         }.start();
     }
 
-    // method to make "Enter your email" to the masked email.
-    private String maskEmail(String email) {
+    private String maskEmail(String email) { //mask the email
         if (email == null || !email.contains("@")) {
             return email;
         }
@@ -116,4 +106,3 @@ public class VerifyActivity extends AppCompatActivity {
         return maskedName + "@" + maskedDomain;
     }
 }
-

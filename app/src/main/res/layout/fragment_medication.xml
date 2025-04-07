@@ -1,110 +1,103 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#FFFFFF"
-    android:clipChildren="false"
-    android:clipToPadding="false"
+    android:background="@android:color/transparent"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:background="@color/white"
+        >
+
+        <LinearLayout
+            android:id="@+id/monthSelectorLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="19dp"
+            android:layout_marginStart="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/currentMonthTextView"
+                android:textColor="#000000"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="10dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+
+            <TextView
+                android:id="@+id/currentYearTextView"
+                android:textColor="@color/darkgrey"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="11dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+        </LinearLayout>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/DatePickerFragment"
+            android:name="com.example.medassist.ui.medication.DatePickerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pill Organiser"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/medicationScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFFFFF">
+        android:orientation="vertical"
+        android:background = "#F5F5F5">
 
         <LinearLayout
             android:id="@+id/medicationContentLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/monthSelectorLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="19dp"
-                android:layout_marginStart="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/currentMonthTextView"
-                    android:textColor="#000000"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    />
-                <TextView
-                    android:id="@+id/currentYearTextView"
-                    android:textColor="#000000"
-                    android:textSize="30sp"
-                    android:layout_marginEnd="11dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    />
-
-                <ImageView
-                    android:id="@+id/monthDropdownIcon"
-                    android:layout_width="35dp"
-                    android:layout_height="41dp"
-                    android:src="@drawable/arrow_drop_down"
-                    android:scaleType="fitXY"/>
-            </LinearLayout>
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/weeklyCalendarFragment"
-                android:name="com.example.medassist.ui.medication.WeeklyCalendarFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-
-            <!-- Pill Organizer Title -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Pill Organiser"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:textColor="#000000" />
-
-            </LinearLayout>
-
-            <!-- Medication List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/medicationRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="match_parent"
+                android:overScrollMode="always"
+                android:scrollbars="vertical"
+                android:layout_marginTop="16dp"
                 android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginEnd="15dp" />
 
-            <!-- Empty State View (shown when no medications) -->
             <LinearLayout
                 android:id="@+id/emptyStateLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="15dp"
@@ -124,30 +117,35 @@
                     android:layout_height="wrap_content"
                     android:text="No medications for this day"
                     android:textSize="16sp"
-                    android:textColor="#757575" />
-
-                <Button
-                    android:id="@+id/addFirstMedicationButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add Medication"
-                    android:layout_marginTop="16dp" />
+                    android:textColor="#757575"/>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
-
-    <!-- Add Medication Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addMedicationButton"
-        android:layout_width="wrap_content"
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/add_circle"
-        app:backgroundTint="#0066CC"
-        app:tint="#FFFFFF"
-        app:fabSize="normal"
-        app:borderWidth="0dp"
-        app:elevation="6dp" />
+        android:layout_gravity="bottom">
+
+        <View
+            android:id="@+id/fadeGradient"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/fade_gradient"/>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addMedicationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/add_circle"
+            app:backgroundTint="#0066CC"
+            app:tint="#FFFFFF"
+            app:fabSize="normal"
+            app:maxImageSize="36dp"
+            app:borderWidth="0dp"
+            app:elevation="6dp" />
+    </FrameLayout>
 </LinearLayout>
