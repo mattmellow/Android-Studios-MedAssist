@@ -43,7 +43,14 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         holder.clinicName.setText(appointment.getClinicName());
         holder.appointmentTime.setText(appointment.getAppointmentStart() + " - " + appointment.getAppointmentEnd());
         holder.appointmentLocation.setText(appointment.getLocation());
-        holder.appointmentDate.setText(appointment.getDate());
+
+        // 👉 Format the date with frequency if frequency is not "N.A"
+        String frequency = appointment.getFrequency();
+        String formattedDate = appointment.getDate();
+        if (frequency != null && !frequency.equalsIgnoreCase("N.A")) {
+            formattedDate += " (" + frequency + ")";
+        }
+        holder.appointmentDate.setText(formattedDate);
 
         if (appointment.getDescription() != null && !appointment.getDescription().isEmpty()) {
             holder.appointmentDescription.setText(appointment.getDescription());
@@ -66,6 +73,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             return false;
         });
     }
+
 
     @Override
     public int getItemCount() {
