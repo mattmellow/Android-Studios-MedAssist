@@ -54,7 +54,7 @@ public class NotificationHelper {
                 intent.putExtra(AlarmReceiver.MEDICATION_TIME_INDEX, i);
 
                 // Generate unique notification ID based on medication ID and time index
-                int notificationId = (int) (medication.getId() + i);
+                int notificationId = (int) (123 + i);
                 intent.putExtra("notificationId", notificationId);
 
                 // Create pending intent

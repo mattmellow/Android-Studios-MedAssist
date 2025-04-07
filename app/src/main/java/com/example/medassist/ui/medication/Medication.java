@@ -13,12 +13,12 @@ public class Medication {
     private String sideEffects;
     private LocalDate date;
     private String foodRelation;
-    private long id;
+    private String id;
     private String duration;  // Added for medication duration
     private String durationUnit;  // Added for duration unit (e.g., days, weeks)
 
     // Constructor including duration and durationUnit
-    public Medication(long id, String name, String dosage, String frequency, List<String> notificationTimes, String sideEffects, String duration, String durationUnit) {
+    public Medication(String id, String name, String dosage, String frequency, List<String> notificationTimes, String sideEffects, String duration, String durationUnit) {
         this.id = id;
         this.name = name;
         this.dosage = dosage;
@@ -30,7 +30,7 @@ public class Medication {
     }
 
     // Legacy constructor for backward compatibility
-    public Medication(long id, String name, String dosage, String frequency, String time, String sideEffects, String duration, String durationUnit) {
+    public Medication(String id, String name, String dosage, String frequency, String time, String sideEffects, String duration, String durationUnit) {
         this.id = id;
         this.name = name;
         this.dosage = dosage;
@@ -118,11 +118,11 @@ public class Medication {
         this.sideEffects = sideEffects;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

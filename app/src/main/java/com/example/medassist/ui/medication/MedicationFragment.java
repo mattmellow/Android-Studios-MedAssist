@@ -78,7 +78,7 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     private void showAddMedicationDialog() {
         DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
             // Generate unique ID
-            long id = System.currentTimeMillis();
+            String id = String.valueOf(System.currentTimeMillis());
 
             // Create new medication with the list of times, duration and duration unit
             Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects, duration, durationUnit);

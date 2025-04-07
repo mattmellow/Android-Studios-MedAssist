@@ -1,7 +1,7 @@
 package com.example.medassist.ui.appointment;
 
 public class Appointment {
-    private long id;
+    private String id;
     private String clinicName;
     private String location;
     private String appointmentStart;
@@ -26,11 +26,11 @@ public class Appointment {
     }
 
     // Getters and setters
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

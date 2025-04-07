@@ -45,7 +45,7 @@ public class AppointmentRepository extends ReminderRepository {
                 .child(userId)
                 .child("appointments")
                 .push()
-                .getKey();  // ✅ No longer tied to date
+                .getKey();  // No longer tied to date
 
         Map<String, Object> appointmentData = new HashMap<>();
         appointmentData.put("clinicName", clinicName);
@@ -58,7 +58,7 @@ public class AppointmentRepository extends ReminderRepository {
         appointmentData.put("description", description);
         appointmentData.put("date", dateStr);  // Still useful for querying/filtering
 
-        // ✅ Use fixed path: reminders > userId > appointments > appointmentId
+        // Use fixed path: reminders > userId > appointments > appointmentId
         mDatabase.child("reminders")
                 .child(userId)
                 .child("appointments")
