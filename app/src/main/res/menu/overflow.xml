@@ -8,4 +8,8 @@
         android:id="@+id/nav_all_medications"
         android:icon="@drawable/pillsicon"
         android:title="@string/all_medications" />
+    <item
+        android:id="@+id/nav_all_appointments"
+        android:icon="@drawable/pillsicon"
+        android:title="@string/all_appointments" />
 </menu>
