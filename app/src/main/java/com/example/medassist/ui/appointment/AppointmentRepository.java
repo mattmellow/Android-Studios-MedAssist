@@ -130,6 +130,66 @@ public class AppointmentRepository extends ReminderRepository {
                 });
     }
 
+    public void loadAppointments(String selectedDate, OnRemindersLoadedListener listener) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            listener.onError("User not logged in");
+            return;
+        }
+
+        String userId = currentUser.getUid();
+
+        mDatabase.child("reminders").child(userId).child("appointments")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<Map<String, Object>> appointmentList = new ArrayList<>();
+
+                        for (DataSnapshot appointmentSnapshot : dataSnapshot.getChildren()) {
+                            String date = appointmentSnapshot.child("date").getValue(String.class);
+                            if (date != null && date.equals(selectedDate)) {
+                                String clinicName = appointmentSnapshot.child("clinicName").getValue(String.class);
+                                String location = appointmentSnapshot.child("location").getValue(String.class);
+                                String appointmentStart = appointmentSnapshot.child("appointmentStart").getValue(String.class);
+                                String appointmentEnd = appointmentSnapshot.child("appointmentEnd").getValue(String.class);
+                                String frequency = appointmentSnapshot.child("frequency").getValue(String.class);
+                                String repeatAmountAndUnit = appointmentSnapshot.child("repeatAmount").getValue(String.class) +
+                                        appointmentSnapshot.child("repeatUnit").getValue(String.class);
+                                String description = appointmentSnapshot.child("description").getValue(String.class);
+                                String id = appointmentSnapshot.getKey();
+
+                                if (clinicName != null && appointmentStart != null && appointmentEnd != null) {
+                                    Appointment appointment = new Appointment(
+                                            id,
+                                            clinicName,
+                                            location,
+                                            appointmentStart,
+                                            appointmentEnd,
+                                            frequency,
+                                            repeatAmountAndUnit,
+                                            description,
+                                            date
+                                    );
+
+                                    Map<String, Object> appointmentData = new HashMap<>();
+                                    appointmentData.put("appointment", appointment);
+                                    appointmentList.add(appointmentData);
+                                }
+                            }
+                        }
+
+                        listener.onRemindersLoaded(appointmentList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        listener.onError(error.getMessage());
+                    }
+                });
+    }
+
+
 
 
     @Override
