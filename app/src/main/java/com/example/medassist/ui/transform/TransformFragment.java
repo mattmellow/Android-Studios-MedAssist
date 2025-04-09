@@ -1,75 +1,98 @@
 package com.example.medassist.ui.transform;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ImageButton;
-import android.widget.Button;
-import androidx.cardview.widget.CardView;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.medassist.R;
 import com.example.medassist.databinding.FragmentTransformBinding;
-import com.example.medassist.databinding.ItemTransformBinding;
-
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.IdRes;
+import com.example.medassist.ui.transform.AppointmentView;
+import com.example.medassist.ui.transform.Medication;
+import com.example.medassist.ui.transform.Exercise;
 
-/**
- * Fragment that demonstrates a responsive layout pattern where the format of the content
- * transforms depending on the size of the screen. Specifically this Fragment shows items in
- * the [RecyclerView] using LinearLayoutManager in a small screen
- * and shows items using GridLayoutManager in a large screen.
- */
 public class TransformFragment extends Fragment {
 
     private FragmentTransformBinding binding;
+    private final List<BaseCard> cards = new ArrayList<>();
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTransformBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-        setupCardNavigation();
-
+        setupCards();
         return binding.getRoot();
     }
 
-    private void setupCardNavigation() {
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+    private void setupCards() {
+        // Clear previous cards if any
+        clearAllCards();
 
-        binding.medicationCard.setOnClickListener(v -> {
-            navController.navigate(R.id.nav_medication);
-        });
+        // 1. Create Medication Card
+        Medication med1 = new Medication(
+                "Aspirin",
+                "8:00 AM",
+                "Take with food"
+        );
+        cards.add(new MedicationCard(
+                requireContext(),
+                binding.medicationCardContainer,
+                med1
+        ));
 
-        binding.appointmentViewCard.setOnClickListener(v -> {
-            navController.navigate(R.id.nav_appointment);
-        });
+        // 2. Create Appointment Card
+        AppointmentView appointment = new AppointmentView(
+                "Tuesday",
+                "18",
+                "Dental Checkup",
+                "QM Dental",
+                "10:30 AM"
+        );
+        cards.add(new AppointmentCard(
+                requireContext(),
+                binding.appointmentCardContainer,
+                appointment
+        ));
 
-        binding.exerciseCard.setOnClickListener(v -> {
-            navController.navigate(R.id.nav_exercise);
-        });
+        // 3. Create Exercise Card
+        Exercise exercise = new Exercise(
+                "Brisk Walking",
+                "Swimming",
+                true,  // First exercise completed
+                false  // Second exercise not completed
+        );
+        cards.add(new ExerciseCard(
+                requireContext(),
+                binding.exerciseCardContainer,
+                exercise,
+                exercise.getCompletionPercentage()  // Auto-calculate progress
+        ));
+
+        // Render all cards
+        for (BaseCard card : cards) {
+            card.render();
+        }
+    }
+
+    private void clearAllCards() {
+        if (binding != null) {
+            if (binding.medicationCardContainer != null)
+                binding.medicationCardContainer.removeAllViews();
+            if (binding.appointmentCardContainer != null)
+                binding.appointmentCardContainer.removeAllViews();
+            if (binding.exerciseCardContainer != null)
+                binding.exerciseCardContainer.removeAllViews();
+        }
+        cards.clear();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        clearAllCards();
         binding = null;
     }
 }
