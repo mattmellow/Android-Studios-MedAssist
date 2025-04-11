@@ -18,51 +18,41 @@ public class MedicationFormDialog extends ReminderFormDialog {
     private Spinner doseUnitSpinner;
 
     private Spinner durationUnitSpinner;
-    private EditText durationEditText;  // Added duration EditText
+    private EditText durationEditText;
     private EditText sideEffectsEditText;
     private RadioGroup foodRelationRadioGroup;
-    private Medication medicationToEdit;  // Store the medication to edit
+    private Medication medicationToEdit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Set the layout resource for Medication (this refers to add_medication.xml)
-        setLayoutResourceId(R.layout.add_medication);  // This is the XML layout for Medication
+        setLayoutResourceId(R.layout.add_medication);
     }
 
     @Override
     protected void initializeFormFields(View view) {
-        // Call the parent implementation to initialize common fields
         super.initializeFormFields(view);
-
-        // Initialize specific fields for medication
         medicationAmountEditText = view.findViewById(R.id.medicationAmountEditText);
         doseUnitSpinner = view.findViewById(R.id.doseUnitSpinner);
-        durationUnitSpinner = view.findViewById(R.id.durationUnitSpinner);  // Initialize duration spinner
-        durationEditText = view.findViewById(R.id.durationEditText);  // Initialize duration EditText
+        durationUnitSpinner = view.findViewById(R.id.durationUnitSpinner);
+        durationEditText = view.findViewById(R.id.durationEditText);
         sideEffectsEditText = view.findViewById(R.id.medicationSideEffectsEditText);
         foodRelationRadioGroup = view.findViewById(R.id.foodRelationRadioGroup);
-
-        // Set up dose unit spinner
-        ArrayAdapter<CharSequence> doseUnitAdapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.dose_units, android.R.layout.simple_spinner_item);
+        //this is in addition to the normal form view, adding the dropdowns
+        ArrayAdapter<CharSequence> doseUnitAdapter = ArrayAdapter.createFromResource(getContext(), R.array.dose_units, android.R.layout.simple_spinner_item);
         doseUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         doseUnitSpinner.setAdapter(doseUnitAdapter);
-
-        // Set up duration unit spinner
-        ArrayAdapter<CharSequence> durationUnitAdapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.duration_units, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> durationUnitAdapter = ArrayAdapter.createFromResource(getContext(), R.array.duration_units, android.R.layout.simple_spinner_item);
         durationUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         durationUnitSpinner.setAdapter(durationUnitAdapter);
 
-        // If we're editing a medication, pre-fill the form with the existing data
+        // add in option to edit,but this has not been fully done, need to add a trigger
         if (medicationToEdit != null) {
             populateFields(medicationToEdit);
         }
     }
 
-    // Method to pre-fill the form with existing medication data
+    //this is for edit, to load the current data
     private void populateFields(Medication medication) {
         nameEditText.setText(medication.getName());
 
@@ -77,13 +67,8 @@ public class MedicationFormDialog extends ReminderFormDialog {
             }
         }
 
-        // Populate frequency spinner
         selectSpinnerItemByValue(frequencySpinner, medication.getFrequency());
-
-        // Populate side effects
         sideEffectsEditText.setText(medication.getSideEffects());
-
-        // Populate food relation
         String foodRelation = medication.getFoodRelation();
         if (foodRelation != null) {
             if (foodRelation.equals("Before")) {
@@ -94,18 +79,14 @@ public class MedicationFormDialog extends ReminderFormDialog {
                 foodRelationRadioGroup.check(R.id.naMealRadioButton);
             }
         }
-
-        // Populate duration fields (if available)
         if (medication.getDuration() != null) {
             durationEditText.setText(String.valueOf(medication.getDuration()));
             selectSpinnerItemByValue(durationUnitSpinner, medication.getDurationUnit());
         }
-
-        // Populate notification times if available
         List<String> times = medication.getNotificationTimes();
     }
 
-    // Method to handle the population of spinners based on string value
+
     private void selectSpinnerItemByValue(Spinner spinner, String value) {
         if (value == null) return;
 
@@ -119,7 +100,6 @@ public class MedicationFormDialog extends ReminderFormDialog {
 
     @Override
     protected void submitForm() {
-        // Collect form data
         String name = nameEditText.getText().toString().trim();
         String amount = medicationAmountEditText.getText().toString().trim();
         String doseUnit = doseUnitSpinner.getSelectedItem().toString();
@@ -127,7 +107,7 @@ public class MedicationFormDialog extends ReminderFormDialog {
         String frequency = frequencySpinner.getSelectedItem().toString();
         String sideEffects = sideEffectsEditText.getText().toString().trim();
 
-        // Get food relation
+        //food
         String foodRelation = "N.A";
         int selectedId = foodRelationRadioGroup.getCheckedRadioButtonId();
         if (selectedId == R.id.beforeMealRadioButton) {
@@ -136,13 +116,11 @@ public class MedicationFormDialog extends ReminderFormDialog {
             foodRelation = "After";
         }
 
-        // Get duration data
+        //duration
         String duration = durationEditText.getText().toString().trim();
         String durationUnit = durationUnitSpinner.getSelectedItem().toString();
 
-        // Validate inputs
         if (!name.isEmpty() && !amount.isEmpty() && !selectedTimes.isEmpty() && !duration.isEmpty()) {
-            // Notify the listener with the form data (pass the duration and durationUnit as extra parameters)
             if (listener != null) {
                 listener.onReminderAdded(name, dosage, frequency, selectedTimes, sideEffects, foodRelation, duration, durationUnit);
                 dismiss();
@@ -152,7 +130,8 @@ public class MedicationFormDialog extends ReminderFormDialog {
         }
     }
 
-    // Method to set the medication data for editing
+
+    //not completed, have yet to add the trigger
     public void setMedication(Medication medication) {
         this.medicationToEdit = medication;
     }

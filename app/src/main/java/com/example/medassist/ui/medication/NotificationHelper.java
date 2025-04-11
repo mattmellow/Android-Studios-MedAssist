@@ -22,26 +22,20 @@ public class NotificationHelper {
      * @param medication Medication to schedule notifications for
      */
     public static void scheduleMedicationReminder(Context context, Medication medication) {
-        // First cancel any existing reminders to avoid duplicates
         cancelMedicationReminder(context, medication.getId());
-
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) {
             Log.e(TAG, "AlarmManager is null");
             return;
         }
 
-        // Get medication details
         String name = medication.getName();
         String dosage = medication.getDosage();
         List<String> times = medication.getNotificationTimes();
 
         Log.d(TAG, "Scheduling " + times.size() + " reminders for " + name);
-
-        // For each notification time
         for (int i = 0; i < times.size(); i++) {
             try {
-                // Parse time string to LocalTime
                 LocalTime time;
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
@@ -52,8 +46,6 @@ public class NotificationHelper {
                 }
 
                 Log.d(TAG, "Setting reminder " + (i+1) + " at " + time + " for " + name);
-
-                // Create calendar for alarm
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.HOUR_OF_DAY, time.getHour());
                 calendar.set(Calendar.MINUTE, time.getMinute());
@@ -73,40 +65,32 @@ public class NotificationHelper {
                 calendar = testCalendar;
                 */
 
-                // Create intent for alarm with UNIQUE action to prevent intent reuse
                 Intent intent = new Intent(context, AlarmReceiver.class);
                 intent.setAction("com.example.medassist.MEDICATION_REMINDER_" + medication.getId() + "_" + i);
                 intent.putExtra(AlarmReceiver.MEDICATION_NAME, name);
                 intent.putExtra(AlarmReceiver.MEDICATION_DOSAGE, dosage);
                 intent.putExtra(AlarmReceiver.MEDICATION_TIME_INDEX, i);  // This is critical - it's the dose number
-
-                // Generate consistent notification ID based on medication ID and time index
                 int notificationId = generateNotificationId(medication.getId(), i);
                 intent.putExtra("notificationId", notificationId);
 
                 Log.d(TAG, "Notification ID for " + name + " dose " + (i+1) + ": " + notificationId);
-
-                // Create pending intent with FLAG_UPDATE_CURRENT to ensure it's unique
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(
                         context,
-                        notificationId,  // Using the same notificationId as the requestCode ensures uniqueness
+                        notificationId,
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-                // Schedule appropriate alarm based on frequency
                 int intervalType = getIntervalTypeForFrequency(medication.getFrequency());
 
-                // For repeating alarms
+
                 if (intervalType > 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-                        // For Android 12+ if exact alarms permission not granted
                         alarmManager.setRepeating(
                                 AlarmManager.RTC_WAKEUP,
                                 calendar.getTimeInMillis(),
                                 intervalType,
                                 pendingIntent);
                     } else {
-                        // Set exact and allow while idle for reliability
                         alarmManager.setExactAndAllowWhileIdle(
                                 AlarmManager.RTC_WAKEUP,
                                 calendar.getTimeInMillis(),
@@ -134,13 +118,6 @@ public class NotificationHelper {
         }
     }
 
-    /**
-     * Generate a consistent notification ID
-     *
-     * @param medicationId Medication ID
-     * @param timeIndex Time slot index
-     * @return Unique notification ID
-     */
     private static int generateNotificationId(String medicationId, int timeIndex) {
         return medicationId.hashCode() * 31 + timeIndex;
     }
@@ -167,12 +144,7 @@ public class NotificationHelper {
         }
     }
 
-    /**
-     * Cancel all scheduled notifications for a medication
-     *
-     * @param context Context
-     * @param medicationId ID of the medication
-     */
+
     public static void cancelMedicationReminder(Context context, String medicationId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager == null) return;

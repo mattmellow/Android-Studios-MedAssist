@@ -26,7 +26,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Get medication info from intent
         String medicationName = intent.getStringExtra(MEDICATION_NAME);
         String medicationDosage = intent.getStringExtra(MEDICATION_DOSAGE);
         int timeIndex = intent.getIntExtra(MEDICATION_TIME_INDEX, 0);
@@ -34,10 +33,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Log.d(TAG, "Received alarm for " + medicationName + ", dose " + (timeIndex + 1));
 
-        // Create notification channel for Android O and above
         createNotificationChannel(context);
 
-        // Create intent to open app when notification is tapped
         Intent mainIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
@@ -45,10 +42,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 mainIntent,
                 PendingIntent.FLAG_IMMUTABLE);
 
-        // Create notification message based on time index
         String timeDescription = getTimeDescription(timeIndex);
 
-        // Build notification
+        //UI for the notifs
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_circle_notifications)
                 .setContentTitle("Medication Reminder")
@@ -71,16 +67,21 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void rescheduleAlarmIfNeeded(Context context, Intent originalIntent) {
-        // Check if this alarm should be rescheduled for tomorrow
         String action = originalIntent.getAction();
         if (action != null && action.startsWith("com.example.medassist.MEDICATION_REMINDER_")) {
-            // Extract medication ID from action
             String[] parts = action.split("_");
             if (parts.length >= 4) {
                 try {
-                    long medicationId = Long.parseLong(parts[3]);
+                    String medicationId = parts[3];
+                    if (parts.length > 5) {
+                        // Reconstruct the ID with any additional parts
+                        StringBuilder idBuilder = new StringBuilder(parts[3]);
+                        for (int i = 4; i < parts.length-1; i++) {
+                            idBuilder.append("_").append(parts[i]);
+                        }
+                        medicationId = idBuilder.toString();
+                    }
 
-                    // Create a new intent with the same data
                     Intent newIntent = new Intent(context, AlarmReceiver.class);
                     newIntent.setAction(originalIntent.getAction());
                     newIntent.putExtra(MEDICATION_NAME, originalIntent.getStringExtra(MEDICATION_NAME));
@@ -88,11 +89,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                     newIntent.putExtra(MEDICATION_TIME_INDEX, originalIntent.getIntExtra(MEDICATION_TIME_INDEX, 0));
                     newIntent.putExtra("notificationId", originalIntent.getIntExtra("notificationId", 0));
 
-                    // Schedule for tomorrow at the same time
+
                     Calendar calendar = Calendar.getInstance();
                     calendar.add(Calendar.DAY_OF_YEAR, 1); // Add one day
 
-                    // Keep the hour and minute the same
+
                     int timeIndex = originalIntent.getIntExtra(MEDICATION_TIME_INDEX, 0);
                     int notificationId = originalIntent.getIntExtra("notificationId", 0);
 
@@ -102,6 +103,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                             newIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
+                    //necessary for Andriod o (API 26) and above
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                     if (alarmManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         alarmManager.setExactAndAllowWhileIdle(
@@ -112,26 +114,15 @@ public class AlarmReceiver extends BroadcastReceiver {
                         Log.d(TAG, "Rescheduled alarm for tomorrow for " +
                                 originalIntent.getStringExtra(MEDICATION_NAME) + ", dose " + (timeIndex + 1));
                     }
-                } catch (NumberFormatException e) {
-                    Log.e(TAG, "Error parsing medication ID for rescheduling", e);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error rescheduling notification", e);
                 }
             }
         }
     }
 
     private String getTimeDescription(int timeIndex) {
-        switch (timeIndex) {
-            case 0:
-                return "for first dose";
-            case 1:
-                return "for second dose";
-            case 2:
-                return "for third dose";
-            case 3:
-                return "for fourth dose";
-            default:
-                return "for dose #" + (timeIndex + 1);
-        }
+        return "for dose #" + (timeIndex + 1);
     }
 
     private void createNotificationChannel(Context context) {
