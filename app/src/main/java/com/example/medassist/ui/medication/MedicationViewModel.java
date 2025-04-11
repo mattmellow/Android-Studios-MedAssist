@@ -108,7 +108,7 @@ public class MedicationViewModel extends AndroidViewModel {
         });
     }
 
-    // Updated to use the overloaded loadMedications with LocalDate argument
+    // using the one that filters by date also
     public void loadMedications(LocalDate selectedDate) {
         isLoading.setValue(true);
 
@@ -129,6 +129,6 @@ public class MedicationViewModel extends AndroidViewModel {
                 errorMessage.setValue(errorMsg);
                 isLoading.setValue(false);
             }
-        }, selectedDate);  // Pass selectedDate to the repository
+        }, selectedDate);
     }
 }

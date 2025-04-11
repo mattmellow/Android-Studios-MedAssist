@@ -21,17 +21,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Fragment for the horizontal date picker
- */
-public class DatePickerFragment extends Fragment {
+
+public class DatePicker extends Fragment {
     private RecyclerView dateRecyclerView;
     private LocalDate selectedDate;
-    private DateItemAdapter dateItemAdapter;
+    private DateList dateItemAdapter;
     private OnDateSelectedListener dateSelectedListener;
     private OnMonthChangeListener monthChangeListener;
 
-    private static final int INITIAL_LOAD_DAYS = 60; // Load more days initially
+    private static final int INITIAL_LOAD_DAYS = 60;
     private static final int LOAD_MORE_THRESHOLD = 5;
 
     public interface OnDateSelectedListener {
@@ -50,19 +48,13 @@ public class DatePickerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.weekly_calendar_view, container, false);
-
         dateRecyclerView = view.findViewById(R.id.weekDaysRecyclerView);
         selectedDate = LocalDate.now();
-
         setupDateView();
         setupScrollListeners();
-
         return view;
     }
 
-    /**
-     * Set a listener for date selection
-     */
     public void setOnDateSelectedListener(OnDateSelectedListener listener) {
         this.dateSelectedListener = listener;
     }
@@ -76,7 +68,7 @@ public class DatePickerFragment extends Fragment {
             dates.add(date);
         }
 
-        dateItemAdapter = new DateItemAdapter(dates, selectedDate, this::onDateClick);
+        dateItemAdapter = new DateList(dates, selectedDate, this::onDateClick);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         dateRecyclerView.setLayoutManager(layoutManager);
         dateRecyclerView.setAdapter(dateItemAdapter);
@@ -87,10 +79,9 @@ public class DatePickerFragment extends Fragment {
         }
     }
 
+    //set up scroll listeners so that when user scrolls a new month and it becomes visible in page, trigger the on month change mthd
     private void setupScrollListeners() {
         LinearLayoutManager layoutManager = (LinearLayoutManager) dateRecyclerView.getLayoutManager();
-
-        // Month tracking scroll listener
         dateRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -102,7 +93,6 @@ public class DatePickerFragment extends Fragment {
                 int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
                 int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
 
-                // Count months in visible range
                 Map<String, Integer> monthCounts = new HashMap<>();
                 for (int i = firstVisibleItemPosition; i <= lastVisibleItemPosition; i++) {
                     if (i >= 0 && i < dates.size()) {
@@ -152,39 +142,21 @@ public class DatePickerFragment extends Fragment {
     private void loadMoreDates() {
         List<LocalDate> currentDates = dateItemAdapter.getDates();
         if (currentDates.isEmpty()) return;
-
         LocalDate lastDate = currentDates.get(currentDates.size() - 1);
-
-        // Add next 7 days
         for (int i = 1; i <= 7; i++) {
             currentDates.add(lastDate.plusDays(i));
         }
-
         dateItemAdapter.notifyItemRangeInserted(currentDates.size() - 7, 7);
     }
 
     private void onDateClick(LocalDate date) {
-        // Update selected date in adapter
         dateItemAdapter.setSelectedDate(date);
         selectedDate = date;
-
-        // Notify listener if set
         if (dateSelectedListener != null) {
             dateSelectedListener.onDateSelected(date);
         }
     }
 
-    /**
-     * Update the date view programmatically
-     */
-    public void updateDateView(LocalDate newDate) {
-        selectedDate = newDate;
-        setupDateView();
-    }
-
-    /**
-     * Get currently selected date
-     */
     public LocalDate getSelectedDate() {
         return selectedDate;
     }

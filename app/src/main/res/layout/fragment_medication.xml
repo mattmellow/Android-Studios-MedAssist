@@ -46,7 +46,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/DatePickerFragment"
-            android:name="com.example.medassist.ui.medication.DatePickerFragment"
+            android:name="com.example.medassist.ui.medication.DatePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
