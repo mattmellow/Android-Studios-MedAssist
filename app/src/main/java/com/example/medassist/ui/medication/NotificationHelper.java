@@ -67,9 +67,11 @@ public class NotificationHelper {
 
                 Intent intent = new Intent(context, AlarmReceiver.class);
                 intent.setAction("com.example.medassist.MEDICATION_REMINDER_" + medication.getId() + "_" + i);
+                intent.putExtra(AlarmReceiver.NOTIFICATION_TYPE, AlarmReceiver.TYPE_MEDICATION);
                 intent.putExtra(AlarmReceiver.MEDICATION_NAME, name);
                 intent.putExtra(AlarmReceiver.MEDICATION_DOSAGE, dosage);
                 intent.putExtra(AlarmReceiver.MEDICATION_TIME_INDEX, i);  // This is critical - it's the dose number
+                intent.putExtra("medicationId", medication.getId());
                 int notificationId = generateNotificationId(medication.getId(), i);
                 intent.putExtra("notificationId", notificationId);
 
@@ -97,7 +99,7 @@ public class NotificationHelper {
                                 pendingIntent);
 
                         // For repeating notifications, we'll reset them when one triggers
-                        // This is handled in AlarmReceiver (will need to be added there)
+                        // This is handled in AlarmReceiver
                     }
 
                     Log.d(TAG, "Set repeating alarm for " + name + " dose " + (i+1) +

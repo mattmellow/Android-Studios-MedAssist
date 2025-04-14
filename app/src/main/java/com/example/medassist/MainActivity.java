@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.example.medassist.ui.reminders.NotificationInitializer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -164,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
                 return handled;
             });
         }
+
+        NotificationInitializer.initializeAllReminders(this);
+
 
         // Hide the default title in the toolbar
 //        if (getSupportActionBar() != null) {
