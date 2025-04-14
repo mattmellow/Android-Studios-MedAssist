@@ -18,7 +18,6 @@
     <string name="fab_content_description">Action button</string>
 
     <string name="menu_profile">Profile</string>
-    <string name="menu_appointment">Appointment</string>
 
     <!-- Medication Card -->
     <string name="today_medications">Today\'s Medications</string>
