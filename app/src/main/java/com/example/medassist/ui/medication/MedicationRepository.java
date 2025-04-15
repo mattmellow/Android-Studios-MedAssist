@@ -345,5 +345,4 @@ public class MedicationRepository extends ReminderRepository {
         return medicationsList;
     }
 
-
 }

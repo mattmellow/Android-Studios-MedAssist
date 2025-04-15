@@ -40,44 +40,38 @@
 
                 <!-- Example items (replace with Java logic) -->
                 <TextView
-                    android:id="@+id/medName1"
+                    android:id="@+id/medName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_text_medium"
-                    android:text="@string/medicine_1"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
                 <TextView
-                    android:id="@+id/medTime1"
+                    android:id="@+id/medTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="@string/medicine1_time"
                     android:textSize="15sp"/>
+
                 <TextView
-                    android:id="@+id/medWarning1"
+                    android:id="@+id/medDosage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="@string/medicine1_warning"
+                    android:textSize="15sp"
+                    android:textColor="@color/darkgrey"/>
+
+                <TextView
+                    android:id="@+id/medWarning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_text_regular"
                     android:textSize="15sp"
                     android:textColor="@color/red"
                     android:layout_marginBottom="20dp"/>
 
-                <TextView
-                    android:id="@+id/medName2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text_medium"
-                    android:text="@string/medicine_2"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-                <TextView
-                    android:id="@+id/medTime2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:text="@string/medicine2_time"/>
+
+
             </LinearLayout>
 
 

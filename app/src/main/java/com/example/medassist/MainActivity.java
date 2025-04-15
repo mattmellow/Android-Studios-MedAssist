@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (destId == R.id.nav_transform) {
                     titleLine1.setText("Welcome back,");
-                    titleLine2.setText("User");
+                    titleLine2.setText("Your Overview");
                 }
                 else if (destId == R.id.nav_medication) {
                     titleLine1.setText("Manage your");

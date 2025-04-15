@@ -9,14 +9,34 @@ import android.widget.TextView;
 import androidx.navigation.Navigation;
 
 import com.example.medassist.R;
-import com.example.medassist.ui.transform.AppointmentView;
+import com.example.medassist.ui.appointment.Appointment;
+
+import java.util.List;
 
 public class AppointmentCard extends BaseCard{
-    private final AppointmentView appointment;
+    private List<Appointment> appointments;
+    private AppointmentView currentAppointmentView;
 
     public AppointmentCard(Context context, ViewGroup container, AppointmentView appointment) {
         super(context, container);
-        this.appointment = appointment;
+        this.currentAppointmentView = appointment;
+    }
+
+    public void updateAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
+        if (appointments != null && !appointments.isEmpty()) {
+            Appointment first = appointments.get(0);
+            this.currentAppointmentView = new AppointmentView(
+                    "Today", // Or parse day from date
+                    first.getDate(),
+                    first.getClinicName(),
+                    first.getLocation(),
+                    first.getAppointmentStart()
+            );
+            if (cardView != null) {
+                bindData(cardView); // Refresh UI
+            }
+        }
     }
 
     @Override
@@ -33,11 +53,13 @@ public class AppointmentCard extends BaseCard{
         TextView locationView = cardView.findViewById(R.id.appointmentLocation1);
         TextView timeView = cardView.findViewById(R.id.appointmentTime1);
 
-        dayView.setText(appointment.getDay());
-        dateView.setText(appointment.getDate());
-        titleView.setText(appointment.getTitle());
-        locationView.setText(appointment.getLocation());
-        timeView.setText(appointment.getTime());
+        if (currentAppointmentView != null) {
+            dayView.setText(currentAppointmentView.getDay());
+            dateView.setText(currentAppointmentView.getDate());
+            titleView.setText(currentAppointmentView.getTitle());
+            locationView.setText(currentAppointmentView.getLocation());
+            timeView.setText(currentAppointmentView.getTime());
+        }
     }
 
     @Override
