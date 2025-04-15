@@ -45,7 +45,7 @@
 - **IDE**: Android Studio  
 - **Authentication**: Firebase Auth
 - **UI**: XML 
-- **Database (optional)**: Firebase Realtime Database 
+- **Database**: Firebase Realtime Database 
 
 ---
 
