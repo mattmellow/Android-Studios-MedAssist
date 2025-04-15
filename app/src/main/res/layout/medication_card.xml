@@ -8,11 +8,6 @@
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true">
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,50 +26,19 @@
                 android:typeface="normal" />
 
             <!-- Medication List (Dynamically populated via Java) -->
-            <LinearLayout
-                android:id="@+id/medicationList"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/medicationsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical">
+                android:clipToPadding="false"
+                android:padding="4dp"/>
 
-                <!-- Example items (replace with Java logic) -->
-                <TextView
-                    android:id="@+id/medName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text_medium"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-                <TextView
-                    android:id="@+id/medTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:textSize="15sp"/>
-
-                <TextView
-                    android:id="@+id/medDosage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:textSize="15sp"
-                    android:textColor="@color/darkgrey"/>
-
-                <TextView
-                    android:id="@+id/medWarning"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/sf_pro_text_regular"
-                    android:textSize="15sp"
-                    android:textColor="@color/red"
-                    android:layout_marginBottom="20dp"/>
-
-
-
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/emptyMedicationsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_medications"
+                android:visibility="gone"/>
 
         </LinearLayout>
-    </ScrollView>
 </androidx.cardview.widget.CardView>

@@ -2,14 +2,14 @@ package com.example.medassist.ui.transform;
 
 import java.util.Objects;
 
-public class AppointmentView {
+public class Appointment {
     private final String day;
     private final String date;
     private final String title;
     private final String location;
     private final String time;
 
-    public AppointmentView(String day, String date, String title, String location, String time) {
+    public Appointment(String day, String date, String title, String location, String time) {
         this.day = day;
         this.date = date;
         this.title = title;
