@@ -33,9 +33,9 @@
 
 - **User Authentication** – Secure sign-in and sign-up using Firebase Authentication  
 - **Medication Reminders** – Get notified to take medications on time  
-- **Appointment Tracker** – View upcoming doctor visits in one place  
-- **Exercise Tracker** – Visualize and edit exercise logs and routines  
-- **Notifications** – Receive alerts to keep track of reminders
+- **Appointment Tracker** – Track and customise upcoming doctor visits 
+- **Exercise Tracker** – Visualize and edit exercise logs and routines 
+- **Notifications** – Receive timely alerts to keep track of reminders
 
 ---
 
@@ -63,15 +63,20 @@
 7. Download the generated `google-services.json` file
 8. Place the file inside your project’s `/app` directory:
 9. Run the app on an emulator or physical device
-10. 
-
+    
 
 ## Usage
 
-- Register a new account or Login with existing credentials  
-- Tap **"Add Medication"** to schedule a new reminder  
-- Use the **Appointments** tab to set doctor visits  
-- View all health logs on the **Dashboard**
+- Tap **Register Account** page if you're a first-time user; otherwise, log in normally.  
+- Enter your details and verify your account.  
+- Once you click the verification link sent to your email, your account will be successfully verified.  
+- After verification, log in normally.  
+- Users can reset their passwords by clicking **Forgot Password**. You’ll be prompted to enter your email address and will receive a link to reset your password.  
+- Tap the **"Add Medication"** tab to schedule a new reminder.  
+- Use the **Appointments** tab to set and edit doctor visits.  
+- Tap the **Exercise** tab to create and modify exercise routines.
+- You can delete appointments and reminders by **pressing and holding** the said item in the **Appointments** or **Reminders** tab.
+- View all logs and relevant health information on the **Landing Page**.
 
 ---
 
