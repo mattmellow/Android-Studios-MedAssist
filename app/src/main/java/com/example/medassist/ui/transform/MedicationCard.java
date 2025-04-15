@@ -9,14 +9,27 @@ import android.widget.TextView;
 import androidx.navigation.Navigation;
 
 import com.example.medassist.R;
-import com.example.medassist.ui.transform.Medication;
+import com.example.medassist.ui.medication.Medication;
+
+import java.util.List;
 
 public class MedicationCard extends BaseCard{
-    private final Medication medication;
+    private List<Medication> medication;
+    private Medication currentMedication;
 
-    public MedicationCard(Context context, ViewGroup container, Medication medication){
+    public void updateMedications(List<Medication> medications) {
+        this.medication = medications;
+        if (medications != null && !medications.isEmpty()) {
+            this.currentMedication = medications.get(0); // Show first medication
+            if (cardView != null) {
+                bindData(cardView); // Refresh UI
+            }
+        }
+    }
+
+    public MedicationCard(Context context, ViewGroup container, Medication medication) {
         super(context, container);
-        this.medication = medication;
+        this.currentMedication = medication;
     }
 
     @Override
@@ -25,21 +38,18 @@ public class MedicationCard extends BaseCard{
     }
 
     @Override
-    protected void bindData(View cardView){
-        TextView nameView = cardView.findViewById(R.id.medName1);
-        TextView timeView = cardView.findViewById(R.id.medTime1);
-        TextView warningView = cardView.findViewById(R.id.medWarning1);
+    protected void bindData(View cardView) {
+        TextView nameView = cardView.findViewById(R.id.medName);
+        TextView dosageView = cardView.findViewById(R.id.medDosage); // Add this view
+        TextView warningView = cardView.findViewById(R.id.medWarning);
 
-        nameView.setText(medication.getName());
-        timeView.setText(medication.getTime());
-
-        if (medication.getWarning().isEmpty()) {
-            warningView.setVisibility(View.GONE);
-        } else {
-            warningView.setText(medication.getWarning());
-            warningView.setVisibility(View.VISIBLE);
+        if (currentMedication != null) {
+            nameView.setText(currentMedication.getName());
+            dosageView.setText(currentMedication.getDosage());
+            warningView.setText(currentMedication.getSideEffects());
         }
     }
+
 
     @Override
     protected void setupActions(){
