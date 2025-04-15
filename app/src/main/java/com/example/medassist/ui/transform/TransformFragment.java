@@ -128,21 +128,8 @@ public class TransformFragment extends Fragment {
         // Clear previous cards if any
         clearAllCards();
 
-        cards.add(new MedicationCard(
-                requireContext(),
-                binding.medicationCardContainer,
-                new Medication(
-                        "",       // id
-                        "",       // name
-                        "",       // dosage
-                        "",       // frequency
-                        new ArrayList<>(),  // notificationTimes
-                        "",       // sideEffects
-                        "",       // duration
-                        ""        // durationUnit
-                )
-        ));
-        cards.add(new AppointmentCard(requireContext(), binding.appointmentCardContainer, new AppointmentView("", "", "", "", "")));
+        cards.add(new MedicationCard(requireContext(), binding.medicationCardContainer, null));
+        cards.add(new AppointmentCard(requireContext(), binding.appointmentCardContainer, null));
 
         // 3. Create Exercise Card
         Exercise exercise = new Exercise(

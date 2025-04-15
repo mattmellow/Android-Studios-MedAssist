@@ -26,6 +26,7 @@
     <string name="medicine_2">Medicine #2</string>
     <string name="medicine2_time">Take once before going to bed</string>
     <string name="add_medication">+ Add Medication</string>
+    <string name="no_medications">"No medications today"</string>
 
     <!-- Appointment Card -->
     <string name="upcoming">Upcoming</string>
@@ -39,6 +40,7 @@
     <string name="appointment_2">Appointment #2</string>
     <string name="location_2">Location #2</string>
     <string name="appointment2_time">02:30 - 04:20 PM</string>
+    <string name="no_appointment">"No appointments this week"</string>
 
     <!-- Content Descriptions -->
     <string name="profile_icon_desc">Profile</string>

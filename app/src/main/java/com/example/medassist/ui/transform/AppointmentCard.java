@@ -4,61 +4,102 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.navigation.Navigation;
 
 import com.example.medassist.R;
 import com.example.medassist.ui.appointment.Appointment;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class AppointmentCard extends BaseCard{
+public class AppointmentCard extends BaseCard {
     private List<Appointment> appointments;
-    private AppointmentView currentAppointmentView;
+    private LinearLayout appointmentsContainer;
+    private TextView emptyView;
 
-    public AppointmentCard(Context context, ViewGroup container, AppointmentView appointment) {
+    public AppointmentCard(Context context, ViewGroup container, Appointment appointment) {
         super(context, container);
-        this.currentAppointmentView = appointment;
-    }
-
-    public void updateAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
-        if (appointments != null && !appointments.isEmpty()) {
-            Appointment first = appointments.get(0);
-            this.currentAppointmentView = new AppointmentView(
-                    "Today", // Or parse day from date
-                    first.getDate(),
-                    first.getClinicName(),
-                    first.getLocation(),
-                    first.getAppointmentStart()
-            );
-            if (cardView != null) {
-                bindData(cardView); // Refresh UI
-            }
+        this.appointments = new ArrayList<>();
+        if (appointment != null) {
+            this.appointments.add(appointment);
         }
     }
 
     @Override
     protected View createView() {
-        return LayoutInflater.from(context)
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.appointment_view_card, container, false);
+
+        appointmentsContainer = view.findViewById(R.id.appointmentsContainer);
+        emptyView = view.findViewById(R.id.emptyAppointmentsText);
+
+        return view;
     }
 
     @Override
     protected void bindData(View cardView) {
-        TextView dayView = cardView.findViewById(R.id.appointmentDay);
-        TextView dateView = cardView.findViewById(R.id.appointmentDate);
-        TextView titleView = cardView.findViewById(R.id.appointmentTitle1);
-        TextView locationView = cardView.findViewById(R.id.appointmentLocation1);
-        TextView timeView = cardView.findViewById(R.id.appointmentTime1);
+        appointmentsContainer.removeAllViews();
 
-        if (currentAppointmentView != null) {
-            dayView.setText(currentAppointmentView.getDay());
-            dateView.setText(currentAppointmentView.getDate());
-            titleView.setText(currentAppointmentView.getTitle());
-            locationView.setText(currentAppointmentView.getLocation());
-            timeView.setText(currentAppointmentView.getTime());
+        if (appointments == null || appointments.isEmpty()) {
+            emptyView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        emptyView.setVisibility(View.GONE);
+
+        for (Appointment appointment : appointments) {
+            View itemView = LayoutInflater.from(context)
+                    .inflate(R.layout.item_appointment, appointmentsContainer, false);
+
+            // Parse day and date
+            String day = parseDayFromDate(appointment.getDate());
+            String date = parseDateToDayOnly(appointment.getDate());
+
+            // Bind data
+            TextView dayView = itemView.findViewById(R.id.appointmentDay);
+            TextView dateView = itemView.findViewById(R.id.appointmentDate);
+            TextView titleView = itemView.findViewById(R.id.appointmentTitle);
+            TextView locationView = itemView.findViewById(R.id.appointmentLocation);
+            TextView timeView = itemView.findViewById(R.id.appointmentTime);
+
+            dayView.setText(day);
+            dateView.setText(date);
+            titleView.setText(appointment.getClinicName());
+            locationView.setText(appointment.getLocation());
+            timeView.setText(appointment.getAppointmentStart());
+
+            appointmentsContainer.addView(itemView);
+        }
+    }
+
+    private String parseDayFromDate(String date) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+            LocalDate localDate = LocalDate.parse(date, formatter);
+            return localDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String parseDateToDayOnly(String date) {
+        try {
+            String[] parts = date.split("/");
+            return parts[0]; // Return just the day part (dd)
+        } catch (Exception e) {
+            return date; // Fallback to full date if parsing fails
+        }
+    }
+
+    public void updateAppointments(List<Appointment> appointments) {
+        this.appointments = appointments != null ? appointments : new ArrayList<>();
+        if (cardView != null) {
+            bindData(cardView);
         }
     }
 
