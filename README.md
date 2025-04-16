@@ -190,7 +190,7 @@ com.example.medassist
 
 - Firebase dependencies must be configured properly  
 - Ensure time zone settings are accurate for alarms
-- Ensure that you are using the latest version of **Android Studio** along with and **Gradle plugin** versions are at least **8.8** for the sake of compatibility
+- Ensure that you are using the latest version of **Android Studio** and **Gradle plugin** versions should be at least **8.8** for compatibility
 
 ## Credits
 
