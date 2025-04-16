@@ -168,20 +168,21 @@ com.example.medassist
 │   ├── settings  
 │   │   ├── SettingsFragment  
 │   │   └── SettingsViewModel  
-│   └── transform  
-│       ├── Appointment  
-│       ├── AppointmentAdapter  
-│       ├── AppointmentCard  
-│       ├── BaseCard  
-│       ├── CardActionHandler  
-│       ├── Exercise  
-│       ├── ExerciseCard  
-│       ├── Medication  
-│       ├── MedicationAdapter  
-│       ├── MedicationCard  
-│       ├── TransformFragment  
-│       └── TransformViewModel
-└── MainActivity
+│   ├── transform  
+│   │   ├── Appointment  
+│   │   ├── AppointmentAdapter  
+│   │   ├── AppointmentCard  
+│   │   ├── BaseCard  
+│   │   ├── CardActionHandler  
+│   │   ├── Exercise  
+│   │   ├── ExerciseCard  
+│   │   ├── Medication  
+│   │   ├── MedicationAdapter  
+│   │   ├── MedicationCard  
+│   │   ├── TransformFragment  
+│   │   └── TransformViewModel  
+├── MainActivity
+
 
 
 ---
