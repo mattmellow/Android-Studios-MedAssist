@@ -112,7 +112,7 @@
 
 ---
 
-### HomePage
+### Homepage
 
 ![Dashboard](dashboard.jpg)
 *Homepage showing upcoming health tasks*
