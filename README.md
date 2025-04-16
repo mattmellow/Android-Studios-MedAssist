@@ -71,18 +71,58 @@
 - Enter your details and verify your account.  
 - Once you click the verification link sent to your email, your account will be successfully verified.  
 - After verification, log in normally.  
-- Users can reset their passwords by clicking **Forgot Password**. You’ll be prompted to enter your email address and will receive a link to reset your password.  
-- Tap the **"Add Medication"** tab to schedule a new reminder.  
+- Users can reset their passwords by clicking **Forgot Password**. You’ll be prompted to enter your email address and will receive a link to reset your password.
 - Use the **Appointments** tab to set and edit doctor visits.  
+- Tap the **"Add Medication"** tab to schedule a new reminder.  
 - Tap the **Exercise** tab to create and modify exercise routines.
+- Tap the **Medications** tab to create and modify exercise routines.
 - You can delete appointments and reminders by **pressing and holding** the said item in the **Appointments** or **Reminders** tab.
-- View all logs and relevant health information on the **Landing Page**.
+- Tap the Profile icon to view and modify medications and appoinments.
+- View all logs and relevant health information on the **Home Page**.
 
 ---
 
 ## Screenshots
 
 <!-- Replace with actual image files -->
+
+## Screenshots
+
+### Login & Registration
+
+![Login Page](iPhone 11 Render-2.png)
+*Login screen with Firebase email/password authentication*
+
+![Register Page](C:\Users\Balraj Singh\Downloads/iPhone 11 Render-2.png)
+*User registration form with email verification prompt*
+
+---
+
+### Medications 
+
+![Medication Page](screenshots/medications.png)
+*View and manage all added medications*
+
+![Add Reminder Dialog](screenshots/add_reminder.png)
+*Dialog to add a new medication reminder*
+
+---
+
+### Appointments & Exercises
+
+![Appointments Page](screenshots/appointments.png)
+*List of upcoming doctor appointments*
+
+![Exercise Page](screenshots/exercise.png)
+*Track and schedule exercise routines*
+
+---
+
+### Landing Page
+
+![Dashboard](screenshots/dashboard.png)
+*Landing page showing upcoming health tasks*
+
 
 ---
 
