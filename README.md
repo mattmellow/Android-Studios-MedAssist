@@ -169,8 +169,18 @@ com.example.medassist
 │   │   ├── SettingsFragment  
 │   │   └── SettingsViewModel  
 │   └── transform  
+│       ├── Appointment  
+│       ├── AppointmentAdapter  
+│       ├── AppointmentCard  
+│       ├── BaseCard  
+│       ├── CardActionHandler  
+│       ├── Exercise  
+│       ├── ExerciseCard  
+│       ├── Medication  
+│       ├── MedicationAdapter  
+│       ├── MedicationCard  
 │       ├── TransformFragment  
-│       └── TransformViewModel  
+│       └── TransformViewModel
 └── MainActivity
 
 
