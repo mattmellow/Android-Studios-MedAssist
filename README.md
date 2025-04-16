@@ -144,5 +144,5 @@ com.example.medassist
 
 ## Credits
 
-- **Developed by Group 49**: Balraj Singh Dhaliwal, ADD NAMES HERE
+- **Developed by Group 49**: Balraj Singh Dhaliwal, Gay Kai Feng Matthew, Tan Shi En Cion, Lee Jya Yin, Otso Tuomas Tuovinen, Kyaw Zin Htoo
 
