@@ -32,10 +32,11 @@
 ## Features
 
 - **User Authentication** – Secure sign-in and sign-up using Firebase Authentication  
-- **Medication Reminders** – Get notified to take medications on time  
-- **Appointment Tracker** – Track and customise upcoming doctor visits 
-- **Exercise Tracker** – Visualize and edit exercise logs and routines 
-- **Notifications** – Receive timely alerts to keep track of reminders
+- **[P0] Medication Reminders** – Get notified to take medications on time  
+- **[P1] Appointment Tracker** – Track and customise upcoming doctor visits 
+- **[P2] Exercise Tracker** – Visualize and edit exercise logs and routines 
+- **[P0/ 1]Notifications** – Receive timely alerts to keep track of reminders
+- **[P0/ 1/ 2] Home Page** - Displays dynamically populated summary cards on user's medications for the day, upcoming appointments, and exercise tracker.
 
 ---
 
@@ -78,7 +79,7 @@
 - Tap the **Medications** tab to create and modify exercise routines.
 - You can delete appointments and reminders by **pressing and holding** the said item in the **Appointments** or **Reminders** tab.
 - Tap the Profile icon to view and modify medications and appoinments.
-- View all logs and relevant health information on the **Home Page**.
+- You can view a summary of medications to be taken today, upcoming appointments within the week, and today's exercise progress on the **Home Page**.
 
 ---
 
@@ -170,14 +171,12 @@ com.example.medassist
 │   │   └── SettingsViewModel  
 │   ├── transform  
 │   │   ├── Appointment  
-│   │   ├── AppointmentAdapter  
 │   │   ├── AppointmentCard  
 │   │   ├── BaseCard  
 │   │   ├── CardActionHandler  
 │   │   ├── Exercise  
 │   │   ├── ExerciseCard  
 │   │   ├── Medication  
-│   │   ├── MedicationAdapter  
 │   │   ├── MedicationCard  
 │   │   ├── TransformFragment  
 │   │   └── TransformViewModel  
