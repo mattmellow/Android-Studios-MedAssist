@@ -87,34 +87,34 @@
 
 ### Login & Registration
 
-![Login Screen](screenshots/login.jpg)
+![Login Screen](login.jpg)
 *Login screen with Firebase email/password authentication*
 
-![Register Screen](screenshots/register.jpg)
+![Register Screen](register.jpg)
 *User registration form with email verification prompt*
 
 ---
 
 ### Medications 
 
-![Medication Page](screenshots/medications.jpg)
+![Medication Page](medications.jpg)
 *View and manage all added medications*
 
 ---
 
 ### Appointments & Exercises
 
-![Appointments Page](screenshots/appointments.jpg)
+![Appointments Page](appointments.jpg)
 *List of upcoming doctor appointments*
 
-![Exercise Page](screenshots/exercise.jpg)
+![Exercise Page](exercise.jpg)
 *Track and schedule exercise routines*
 
 ---
 
 ### HomePage
 
-![Dashboard](screenshots/dashboard.jpg)
+![Dashboard](dashboard.jpg)
 *Homepage showing upcoming health tasks*
 
 
