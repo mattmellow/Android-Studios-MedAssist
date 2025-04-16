@@ -88,8 +88,50 @@
 
 ## Project Structure
 
-com.example.medassist
-├── ui.login         // Login, Register, Verify screens
+com.example.medassist  
+├── ui  
+│   ├── allmedications  
+│   │   ├── AllMedicationsFragment  
+│   │   ├── AllMedicationsViewModel  
+│   │   └── AllMedicationsViewModelFactory  
+│   ├── appointment  
+│   │   ├── Appointment  
+│   │   ├── AppointmentFormDialog  
+│   │   ├── AppointmentFragment  
+│   │   ├── AppointmentRepository  
+│   │   └── AppointmentViewModel  
+│   ├── exercise  
+│   │   ├── BarChartView  
+│   │   ├── ExerciseFragment  
+│   │   └── ExerciseViewModel  
+│   ├── login  
+│   │   ├── BaseAuthActivity  
+│   │   ├── EmailAuth  
+│   │   ├── LoginActivity  
+│   │   ├── RegisterActivity  
+│   │   └── VerifyActivity  
+│   ├── medication  
+│   │   ├── AlarmReceiver  
+│   │   ├── DateItemAdapter  
+│   │   ├── DatePickerFragment  
+│   │   ├── DialogHelper  
+│   │   ├── Medication  
+│   │   ├── MedicationAdapter  
+│   │   ├── MedicationFormDialog  
+│   │   ├── MedicationFragment  
+│   │   ├── MedicationRepository  
+│   │   ├── MedicationViewModel  
+│   │   └── NotificationHelper  
+│   ├── reminders  
+│   │   ├── ReminderFormDialog  
+│   │   └── ReminderRepository  
+│   ├── settings  
+│   │   ├── SettingsFragment  
+│   │   └── SettingsViewModel  
+│   └── transform  
+│       ├── TransformFragment  
+│       └── TransformViewModel  
+└── MainActivity
 
 
 ---
