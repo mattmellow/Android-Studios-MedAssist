@@ -82,18 +82,15 @@
 
 ---
 
-## Screenshots
-
-<!-- Replace with actual image files -->
 
 ## Screenshots
 
 ### Login & Registration
 
-![Login Page](iPhone 11 Render-2.png)
+![Login Screen](screenshots/login.png)
 *Login screen with Firebase email/password authentication*
 
-![Register Page](C:\Users\Balraj Singh\Downloads/iPhone 11 Render-2.png)
+![Register Screen](screenshots/register.png)
 *User registration form with email verification prompt*
 
 ---
