@@ -88,9 +88,11 @@
 ### Login & Registration
 
 ![Login Screen](login.jpg)
+
 *Login screen with Firebase email/password authentication*
 
 ![Register Screen](register.jpg)
+
 *User registration form with email verification prompt*
 
 ---
@@ -98,6 +100,7 @@
 ### Medications 
 
 ![Medication Page](medications.jpg)
+
 *View and manage all added medications*
 
 ---
@@ -105,9 +108,11 @@
 ### Appointments & Exercises
 
 ![Appointments Page](appointments.jpg)
+
 *List of upcoming doctor appointments*
 
 ![Exercise Page](exercise.jpg)
+
 *Track and schedule exercise routines*
 
 ---
@@ -115,6 +120,7 @@
 ### Homepage
 
 ![Dashboard](dashboard.jpg)
+
 *Homepage showing upcoming health tasks*
 
 
