@@ -64,24 +64,27 @@
 7. Download the generated `google-services.json` file
 8. Place the file inside your project’s `/app` directory:
 9. Run the app on an emulator or physical device
-    
+
 
 ## Usage
 
-- Tap **Register Account** page if you're a first-time user; otherwise, log in normally.  
-- Enter your details and verify your account.  
-- Once you click the verification link sent to your email, your account will be successfully verified.  
-- After verification, log in normally.  
+- Tap **Register Account** page if you're a first-time user; otherwise, log in normally.
+- Enter your details and verify your account.
+- Once you click the verification link sent to your email, your account will be successfully verified.
+- After verification, log in normally.
 - Users can reset their passwords by clicking **Forgot Password**. You’ll be prompted to enter your email address and will receive a link to reset your password.
-- Use the **Appointments** tab to set and edit doctor visits.  
-- Tap the **"Add Medication"** tab to schedule a new reminder.  
-- Tap the **Exercise** tab to create and modify exercise routines.
-- Tap the **Medications** tab to create and modify exercise routines.
-- You can delete appointments and reminders by **pressing and holding** the said item in the **Appointments** or **Reminders** tab.
-- Tap the Profile icon to view and modify medications and appoinments.
+- Users would then be brought to the home page, where they would be able to navigate to other pages either through clicking on the respective cards in **Homepage** or by clicking on the bottom navigation bar.
+- Tap the **Medications** tab to create medication reminders.
+- Tap the **"Add Medication"** button for a medication form to pop up. Upon submitting the form, the newly added medication would then be shown under the user's daily list of medications to take. Reminders would be sent at the time users need to consume the medication.
+- Use the **Appointments** tab to set and edit doctor visits. Similar to the **Add Medication** button, the **Add Appointments** button would also allow users to add their appointments for that selected date. Reminders would be sent one hour before the user's appointmnet timings, this is to give allowance for travel and preperation.
+- Tap the **Exercise** tab to create and monitor the progress of exercise routines.
+- You can delete appointments and medications by **pressing and holding** the said item in the **Appointments** or **Medications** tab.
+- Tap the Profile icon to view all previously saved medications and appointments.
 - You can view a summary of medications to be taken today, upcoming appointments within the week, and today's exercise progress on the **Home Page**.
 
 ---
+
+
 
 
 ## Screenshots
