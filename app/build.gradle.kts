@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.mikhaellopez:circularprogressbar:3.1.0")
     implementation(libs.activity)
     testImplementation(libs.junit)
