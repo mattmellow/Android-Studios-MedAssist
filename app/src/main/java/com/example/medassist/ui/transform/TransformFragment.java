@@ -1,75 +1,172 @@
 package com.example.medassist.ui.transform;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ImageButton;
-import android.widget.Button;
-import androidx.cardview.widget.CardView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.medassist.R;
 import com.example.medassist.databinding.FragmentTransformBinding;
-import com.example.medassist.databinding.ItemTransformBinding;
 
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import androidx.annotation.IdRes;
+import com.example.medassist.ui.appointment.Appointment;
+import com.example.medassist.ui.appointment.AppointmentRepository;
+import com.example.medassist.ui.reminders.ReminderRepository;
+import com.example.medassist.ui.medication.Medication;
+import com.example.medassist.ui.medication.MedicationRepository;
+import com.google.firebase.auth.FirebaseAuth;
 
-/**
- * Fragment that demonstrates a responsive layout pattern where the format of the content
- * transforms depending on the size of the screen. Specifically this Fragment shows items in
- * the [RecyclerView] using LinearLayoutManager in a small screen
- * and shows items using GridLayoutManager in a large screen.
- */
 public class TransformFragment extends Fragment {
 
     private FragmentTransformBinding binding;
+    private final List<BaseCard> cards = new ArrayList<>();
+    private AppointmentRepository appointmentRepository;
+    private MedicationRepository medicationRepository;
+    private FirebaseAuth mAuth;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTransformBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        mAuth = FirebaseAuth.getInstance();
+        appointmentRepository = new AppointmentRepository(requireContext());
+        medicationRepository = new MedicationRepository(requireContext());
 
-        setupCardNavigation();
-
+        setupCards(); //Initiliaze UI with placeholders
+        loadUpcomingAppointments();
+        loadTodaysMedications();
         return binding.getRoot();
     }
 
-    private void setupCardNavigation() {
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+    private void loadUpcomingAppointments() {
+        appointmentRepository.loadAppointments(new ReminderRepository.OnRemindersLoadedListener() {
+            @Override
+            public void onRemindersLoaded(List<Map<String, Object>> reminders) {
+                List<Appointment> upcomingAppointments = new ArrayList<>();
+                LocalDate today = LocalDate.now();
+                LocalDate nextWeek = today.plusDays(7);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
-        binding.medicationCard.setOnClickListener(v -> {
-            navController.navigate(R.id.nav_medication);
-        });
+                for (Map<String, Object> map : reminders) {
+                    Appointment appointment = (Appointment) map.get("appointment");
+                    if (appointment != null) {
+                        LocalDate appointmentDate = LocalDate.parse(appointment.getDate(), formatter);
+                        if (!appointmentDate.isBefore(today) && !appointmentDate.isAfter(nextWeek)) {
+                            upcomingAppointments.add(appointment);
+                        }
+                    }
+                }
 
-        binding.appointmentViewCard.setOnClickListener(v -> {
-            navController.navigate(R.id.nav_appointment);
-        });
+                // Update Appointment Card
+                AppointmentCard appointmentCard = findAppointmentCard();
+                if (appointmentCard != null) {
+                    appointmentCard.updateAppointments(upcomingAppointments);
+                }
+            }
 
-        binding.exerciseCard.setOnClickListener(v -> {
-            navController.navigate(R.id.nav_exercise);
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(getContext(), "Appointments: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    private void loadTodaysMedications() {
+        medicationRepository.loadMedications(new ReminderRepository.OnRemindersLoadedListener() {
+            @Override
+            public void onRemindersLoaded(List<Map<String, Object>> reminders) {
+                List<Medication> todaysMeds = new ArrayList<>();
+
+                for (Map<String, Object> map : reminders) {
+                    Medication med = (Medication) map.get("medication");
+                    if (med != null) {
+                        todaysMeds.add(med);
+                    }
+                }
+
+                // Update Medication Card
+                MedicationCard medicationCard = findMedicationCard();
+                if (medicationCard != null) {
+                    medicationCard.updateMedications(todaysMeds);
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(getContext(), "Medications: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // --- Helper Methods ---
+    private AppointmentCard findAppointmentCard() {
+        for (BaseCard card : cards) {
+            if (card instanceof AppointmentCard) {
+                return (AppointmentCard) card;
+            }
+        }
+        return null;
+    }
+
+    private MedicationCard findMedicationCard() {
+        for (BaseCard card : cards) {
+            if (card instanceof MedicationCard) {
+                return (MedicationCard) card;
+            }
+        }
+        return null;
+    }
+
+    private void setupCards() {
+        // Clear previous cards if any
+        clearAllCards();
+
+        cards.add(new MedicationCard(requireContext(), binding.medicationCardContainer, null));
+        cards.add(new AppointmentCard(requireContext(), binding.appointmentCardContainer, null));
+
+        // 3. Create Exercise Card
+        Exercise exercise = new Exercise(
+                "Brisk Walking",
+                "Swimming",
+                true,  // First exercise completed
+                false  // Second exercise not completed
+        );
+        cards.add(new ExerciseCard(
+                requireContext(),
+                binding.exerciseCardContainer,
+                exercise,
+                exercise.getCompletionPercentage()  // Auto-calculate progress
+        ));
+
+        // Render all cards
+        for (BaseCard card : cards) {
+            card.render();
+        }
+    }
+
+    private void clearAllCards() {
+        if (binding != null) {
+            if (binding.medicationCardContainer != null)
+                binding.medicationCardContainer.removeAllViews();
+            if (binding.appointmentCardContainer != null)
+                binding.appointmentCardContainer.removeAllViews();
+            if (binding.exerciseCardContainer != null)
+                binding.exerciseCardContainer.removeAllViews();
+        }
+        cards.clear();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        clearAllCards();
         binding = null;
     }
 }

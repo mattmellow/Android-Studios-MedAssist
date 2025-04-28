@@ -20,13 +20,11 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Locale;
 
-/**
- * Fragment for medication management
- */
-public class MedicationFragment extends Fragment implements DatePickerFragment.OnDateSelectedListener {
+
+public class MedicationFragment extends Fragment implements DatePicker.OnDateSelectedListener {
 
     private FragmentMedicationBinding binding;
-    private DatePickerFragment datePickerFragment;
+    private DatePicker datePickerFragment;
     private MedicationViewModel medicationViewModel;
     private MedicationAdapter medicationAdapter;
 
@@ -46,11 +44,9 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
     }
 
     private void initializeDatePicker() {
-        datePickerFragment = (DatePickerFragment)
-                getChildFragmentManager().findFragmentById(R.id.DatePickerFragment);
-
+        datePickerFragment = (DatePicker) getChildFragmentManager().findFragmentById(R.id.DatePickerFragment);
         if (datePickerFragment == null) {
-            datePickerFragment = new DatePickerFragment();
+            datePickerFragment = new DatePicker();
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.DatePickerFragment, datePickerFragment)
                     .commit();
@@ -62,7 +58,6 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
             binding.currentYearTextView.setText(String.valueOf(year));
         });
 
-        // Set initial month and year
         LocalDate currentDate = LocalDate.now();
         String currentMonth = currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         int currentYear = currentDate.getYear();
@@ -77,32 +72,20 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
 
     private void showAddMedicationDialog() {
         DialogHelper.showAddMedicationDialog(this, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
-            // Generate unique ID
             String id = String.valueOf(System.currentTimeMillis());
-
-            // Create new medication with the list of times, duration and duration unit
             Medication medication = new Medication(id, name, dosage, frequency, times, sideEffects, duration, durationUnit);
-
-            // Set the food relation
             medication.setFoodRelation(foodRelation);
-
-            // Set the date
             medication.setDate(datePickerFragment.getSelectedDate());
-            // Add to view model
             medicationViewModel.addMedication(medication);
         });
     }
 
     @Override
     public void onDateSelected(LocalDate date) {
-        // Update month and year display
         String month = date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         int year = date.getYear();
-
         binding.currentMonthTextView.setText(month);
         binding.currentYearTextView.setText(String.valueOf(year));
-
-        // Update view model
         medicationViewModel.setSelectedDate(date);
     }
 
@@ -130,23 +113,6 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
         });
     }
 
-    private void showEditMedicationDialog(Medication medication) {
-        DialogHelper.showEditMedicationDialog(this, medication, (name, dosage, frequency, times, sideEffects, foodRelation, duration, durationUnit) -> {
-            // Update medication with new values
-            medication.setName(name);
-            medication.setDosage(dosage);
-            medication.setFrequency(frequency);
-            medication.setNotificationTimes(times);
-            medication.setSideEffects(sideEffects);
-            medication.setFoodRelation(foodRelation);
-            medication.setDuration(duration);  // Set new duration value
-            medication.setDurationUnit(durationUnit);  // Set new duration unit value
-
-            // Update in view model
-            medicationViewModel.updateMedication(medication);
-        });
-    }
-
     private void observeViewModel() {
         medicationViewModel.getMedications().observe(getViewLifecycleOwner(), medications -> {
             medicationAdapter.updateMedications(medications);
@@ -161,16 +127,11 @@ public class MedicationFragment extends Fragment implements DatePickerFragment.O
         });
 
         LocalDate selectedDate = datePickerFragment.getSelectedDate();
-        Log.d("filter","i am in med frag observe with date: " + selectedDate);
-        // If selectedDate is null, use today's date as a fallback
         if (selectedDate == null) {
             selectedDate = LocalDate.now();
         }
-        Log.d("filter","i am in med frag observe with date: " + selectedDate);
-        medicationViewModel.loadMedications(selectedDate);  // Pass the selected date
+        medicationViewModel.loadMedications(selectedDate);
     }
-
-
 
     private void showDeleteConfirmationDialog(Medication medication) {
         DialogHelper.showDeleteConfirmationDialog(getContext(), medication, () -> {

@@ -1,6 +1,5 @@
 package com.example.medassist.ui.medication;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,133 +14,120 @@ import androidx.core.app.NotificationCompat;
 import com.example.medassist.MainActivity;
 import com.example.medassist.R;
 
-import java.util.Calendar;
-
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
-    public static final String CHANNEL_ID = "medication_channel";
     public static final String MEDICATION_NAME = "medication_name";
     public static final String MEDICATION_DOSAGE = "medication_dosage";
     public static final String MEDICATION_TIME_INDEX = "medication_time_index";
 
+    public static final String APPOINTMENT_TITLE = "appointment_title";
+    public static final String APPOINTMENT_LOCATION = "appointment_location";
+    public static final String APPOINTMENT_TIME = "appointment_time";
+    public static final String NOTIFICATION_TYPE = "notification_type";
+
+    public static final String TYPE_MEDICATION = "medication";
+    public static final String TYPE_APPOINTMENT = "appointment";
+
+    private static final String MEDICATION_CHANNEL_ID = "medication_notifications";
+    private static final String APPOINTMENT_CHANNEL_ID = "appointment_notifications";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Get medication info from intent
+        String type = intent.getStringExtra(NOTIFICATION_TYPE);
+        int notificationId = intent.getIntExtra("notificationId", 1);
+
+        if (TYPE_MEDICATION.equals(type)) {
+            handleMedicationNotification(context, intent, notificationId);
+        } else if (TYPE_APPOINTMENT.equals(type)) {
+            handleAppointmentNotification(context, intent, notificationId);
+        }
+
+        // If this is a repeating alarm that needs to be rescheduled because we're using setExactAndAllowWhileIdle
+        String medicationId = intent.getStringExtra("medicationId");
+        if (medicationId != null) {
+            // Implement any rescheduling logic if needed for recurring medications
+            // This would be used if you're using setExactAndAllowWhileIdle for precise alarms
+        }
+    }
+
+    private void handleMedicationNotification(Context context, Intent intent, int notificationId) {
         String medicationName = intent.getStringExtra(MEDICATION_NAME);
-        String medicationDosage = intent.getStringExtra(MEDICATION_DOSAGE);
+        String dosage = intent.getStringExtra(MEDICATION_DOSAGE);
         int timeIndex = intent.getIntExtra(MEDICATION_TIME_INDEX, 0);
-        int notificationId = intent.getIntExtra("notificationId", 0);
 
-        Log.d(TAG, "Received alarm for " + medicationName + ", dose " + (timeIndex + 1));
+        Log.d(TAG, "Showing medication notification: " + medicationName + ", Dose #" + (timeIndex + 1));
 
-        // Create notification channel for Android O and above
-        createNotificationChannel(context);
+        String title = "Time to take your medication";
+        String message = medicationName + " - " + dosage;
 
-        // Create intent to open app when notification is tapped
-        Intent mainIntent = new Intent(context, MainActivity.class);
+        // Create a notification channel for Android O and higher
+        createNotificationChannel(context, MEDICATION_CHANNEL_ID, "Medication Reminders", "Notifications for medication reminders");
+
+        // Create an intent to open the app when notification is tapped
+        Intent activityIntent = new Intent(context, MainActivity.class);
+        activityIntent.putExtra("openMedication", true);
+        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                context,
-                notificationId,
-                mainIntent,
-                PendingIntent.FLAG_IMMUTABLE);
+                context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Create notification message based on time index
-        String timeDescription = getTimeDescription(timeIndex);
-
-        // Build notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_stat_circle_notifications)
-                .setContentTitle("Medication Reminder")
-                .setContentText("Time to take " + medicationName + " (" + medicationDosage + ") " + timeDescription)
+        // Build and show the notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MEDICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
-        // Show notification
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify(notificationId, builder.build());
-            Log.d(TAG, "Notification shown for " + medicationName + ", dose " + (timeIndex + 1));
-        }
-
-        // Reschedule for tomorrow if this is a daily medication
-        // This is necessary because we're using exact alarms which don't repeat automatically
-        rescheduleAlarmIfNeeded(context, intent);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(notificationId, builder.build());
     }
 
-    private void rescheduleAlarmIfNeeded(Context context, Intent originalIntent) {
-        // Check if this alarm should be rescheduled for tomorrow
-        String action = originalIntent.getAction();
-        if (action != null && action.startsWith("com.example.medassist.MEDICATION_REMINDER_")) {
-            // Extract medication ID from action
-            String[] parts = action.split("_");
-            if (parts.length >= 4) {
-                try {
-                    long medicationId = Long.parseLong(parts[3]);
+    private void handleAppointmentNotification(Context context, Intent intent, int notificationId) {
+        String appointmentTitle = intent.getStringExtra(APPOINTMENT_TITLE);
+        String location = intent.getStringExtra(APPOINTMENT_LOCATION);
+        String time = intent.getStringExtra(APPOINTMENT_TIME);
 
-                    // Create a new intent with the same data
-                    Intent newIntent = new Intent(context, AlarmReceiver.class);
-                    newIntent.setAction(originalIntent.getAction());
-                    newIntent.putExtra(MEDICATION_NAME, originalIntent.getStringExtra(MEDICATION_NAME));
-                    newIntent.putExtra(MEDICATION_DOSAGE, originalIntent.getStringExtra(MEDICATION_DOSAGE));
-                    newIntent.putExtra(MEDICATION_TIME_INDEX, originalIntent.getIntExtra(MEDICATION_TIME_INDEX, 0));
-                    newIntent.putExtra("notificationId", originalIntent.getIntExtra("notificationId", 0));
+        Log.d(TAG, "Showing appointment notification: " + appointmentTitle + " at " + time);
 
-                    // Schedule for tomorrow at the same time
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.DAY_OF_YEAR, 1); // Add one day
-
-                    // Keep the hour and minute the same
-                    int timeIndex = originalIntent.getIntExtra(MEDICATION_TIME_INDEX, 0);
-                    int notificationId = originalIntent.getIntExtra("notificationId", 0);
-
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                            context,
-                            notificationId,
-                            newIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    if (alarmManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        alarmManager.setExactAndAllowWhileIdle(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.getTimeInMillis(),
-                                pendingIntent
-                        );
-                        Log.d(TAG, "Rescheduled alarm for tomorrow for " +
-                                originalIntent.getStringExtra(MEDICATION_NAME) + ", dose " + (timeIndex + 1));
-                    }
-                } catch (NumberFormatException e) {
-                    Log.e(TAG, "Error parsing medication ID for rescheduling", e);
-                }
-            }
+        String title = "Upcoming Appointment";
+        String message = appointmentTitle + " at " + time;
+        if (location != null && !location.isEmpty()) {
+            message += " - " + location;
         }
+
+        // Create a notification channel for Android O and higher
+        createNotificationChannel(context, APPOINTMENT_CHANNEL_ID, "Appointment Reminders", "Notifications for upcoming appointments");
+
+        // Create an intent to open the app when notification is tapped
+        Intent activityIntent = new Intent(context, MainActivity.class);
+        activityIntent.putExtra("openAppointment", true);
+        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Build and show the notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, APPOINTMENT_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(notificationId, builder.build());
     }
 
-    private String getTimeDescription(int timeIndex) {
-        switch (timeIndex) {
-            case 0:
-                return "for first dose";
-            case 1:
-                return "for second dose";
-            case 2:
-                return "for third dose";
-            case 3:
-                return "for fourth dose";
-            default:
-                return "for dose #" + (timeIndex + 1);
-        }
-    }
-
-    private void createNotificationChannel(Context context) {
+    private void createNotificationChannel(Context context, String channelId, String name, String description) {
+        // Create the notification channel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Medication Reminders",
-                    NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Notifications for medication reminders");
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            channel.setDescription(description);
 
+            // Register the channel with the system
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }

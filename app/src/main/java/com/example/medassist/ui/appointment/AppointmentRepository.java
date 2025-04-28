@@ -11,6 +11,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +132,129 @@ public class AppointmentRepository extends ReminderRepository {
                     }
                 });
     }
+    public void loadAppointments(String selectedDate, OnRemindersLoadedListener listener) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            listener.onError("User not logged in");
+            return;
+        }
+
+        String userId = currentUser.getUid();
+
+        mDatabase.child("reminders").child(userId).child("appointments")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<Map<String, Object>> filteredAppointments = new ArrayList<>();
+
+                        for (DataSnapshot appointmentSnapshot : dataSnapshot.getChildren()) {
+                            String clinicName = appointmentSnapshot.child("clinicName").getValue(String.class);
+                            String location = appointmentSnapshot.child("location").getValue(String.class);
+                            String appointmentStart = appointmentSnapshot.child("appointmentStart").getValue(String.class);
+                            String appointmentEnd = appointmentSnapshot.child("appointmentEnd").getValue(String.class);
+                            String frequency = appointmentSnapshot.child("frequency").getValue(String.class);
+                            String repeatAmount = appointmentSnapshot.child("repeatAmount").getValue(String.class);
+                            String repeatUnit = appointmentSnapshot.child("repeatUnit").getValue(String.class);
+                            String description = appointmentSnapshot.child("description").getValue(String.class);
+                            String dateStr = appointmentSnapshot.child("date").getValue(String.class);
+                            String id = appointmentSnapshot.getKey();
+
+                            if (clinicName == null || appointmentStart == null || appointmentEnd == null || dateStr == null) continue;
+
+                            // Match selectedDate
+                            if (isDateInRange(selectedDate, dateStr, frequency, repeatAmount, repeatUnit)) {
+                                Appointment appointment = new Appointment(
+                                        id,
+                                        clinicName,
+                                        location,
+                                        appointmentStart,
+                                        appointmentEnd,
+                                        frequency,
+                                        repeatAmount + repeatUnit,
+                                        description,
+                                        dateStr
+                                );
+
+                                Map<String, Object> appointmentMap = new HashMap<>();
+                                appointmentMap.put("appointment", appointment);
+                                filteredAppointments.add(appointmentMap);
+                            }
+                        }
+
+                        listener.onRemindersLoaded(filteredAppointments);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        listener.onError(error.getMessage());
+                    }
+                });
+    }
+
+    private boolean isDateInRange(String selectedDateStr, String startDateStr, String frequency, String repeatAmount, String repeatUnit) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+        LocalDate selectedDate = LocalDate.parse(selectedDateStr, formatter);
+        LocalDate startDate = LocalDate.parse(startDateStr, formatter);
+
+        if ("N.A".equals(frequency)) {
+            return selectedDate.equals(startDate);
+        }
+
+        int amount = 0;
+        try {
+            amount = Integer.parseInt(repeatAmount);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        LocalDate endDate = startDate;  // default fallback
+
+        switch (repeatUnit.toLowerCase()) {
+            case "days":
+                endDate = startDate.plusDays(amount);
+                break;
+            case "weeks":
+                endDate = startDate.plusWeeks(amount);
+                break;
+            case "months":
+                endDate = startDate.plusMonths(amount);
+                break;
+        }
+
+
+        if (selectedDate.isBefore(startDate) || selectedDate.isAfter(endDate)) return false;
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, selectedDate);
+
+        switch (frequency) {
+            case "Daily":
+                return true;
+            case "Weekly":
+                return daysBetween % 7 == 0;
+            case "Biweekly":
+                return daysBetween % 14 == 0;
+            case "Monthly":
+                return selectedDate.getDayOfMonth() == startDate.getDayOfMonth();
+            case "Bimonthly":
+                return selectedDate.getDayOfMonth() == startDate.getDayOfMonth() &&
+                        ChronoUnit.MONTHS.between(startDate, selectedDate) % 2 == 0;
+            case "Every 4 Months":
+                return selectedDate.getDayOfMonth() == startDate.getDayOfMonth() &&
+                        ChronoUnit.MONTHS.between(startDate, selectedDate) % 4 == 0;
+            case "Every 6 Months":
+                return selectedDate.getDayOfMonth() == startDate.getDayOfMonth() &&
+                        ChronoUnit.MONTHS.between(startDate, selectedDate) % 6 == 0;
+            case "Annually":
+                return selectedDate.getDayOfMonth() == startDate.getDayOfMonth() &&
+                        selectedDate.getMonth() == startDate.getMonth();
+            default:
+                return false;
+        }
+
+    }
+
+
 
 
 

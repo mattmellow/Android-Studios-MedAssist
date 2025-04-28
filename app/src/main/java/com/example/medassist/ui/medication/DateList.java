@@ -16,10 +16,7 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Adapter for displaying dates in the horizontal date picker
- */
-public class DateItemAdapter extends RecyclerView.Adapter<DateItemAdapter.DateItemViewHolder> {
+public class DateList extends RecyclerView.Adapter<DateList.DateItemViewHolder> {
     private final List<LocalDate> dates;
     private LocalDate selectedDate;
     private final OnDateClickListener dateClickListener;
@@ -28,22 +25,17 @@ public class DateItemAdapter extends RecyclerView.Adapter<DateItemAdapter.DateIt
         void onDateClick(LocalDate date);
     }
 
-    public DateItemAdapter(List<LocalDate> dates, LocalDate selectedDate, OnDateClickListener listener) {
+    public DateList(List<LocalDate> dates, LocalDate selectedDate, OnDateClickListener listener) {
         this.dates = dates;
         this.selectedDate = selectedDate;
         this.dateClickListener = listener;
     }
 
-    /**
-     * Get the current list of dates
-     */
     public List<LocalDate> getDates() {
         return dates;
     }
 
-    /**
-     * Update the selected date and refresh the UI
-     */
+
     public void setSelectedDate(LocalDate date) {
         LocalDate oldSelectedDate = selectedDate;
         selectedDate = date;
@@ -70,19 +62,13 @@ public class DateItemAdapter extends RecyclerView.Adapter<DateItemAdapter.DateIt
     @Override
     public void onBindViewHolder(@NonNull DateItemViewHolder holder, int position) {
         LocalDate date = dates.get(position);
-
-        // Set day of week abbreviation
+        //abbreviation for day
         holder.dayOfWeekText.setText(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).toUpperCase());
-
-        // Set day of month
         holder.dateOfMonthText.setText(String.valueOf(date.getDayOfMonth()));
-
-        // Set selection and color
         boolean isSelected = date.isEqual(selectedDate);
         holder.dayContainer.setSelected(isSelected);
         holder.dateOfMonthText.setSelected(isSelected);
         holder.dayOfWeekText.setSelected(isSelected);
-
         if (isSelected) {
             holder.dateOfMonthText.setTextColor(holder.itemView.getResources().getColor(android.R.color.white));
             holder.dayOfWeekText.setTextColor(holder.itemView.getResources().getColor(android.R.color.white));
@@ -91,7 +77,6 @@ public class DateItemAdapter extends RecyclerView.Adapter<DateItemAdapter.DateIt
             holder.dayOfWeekText.setTextColor(holder.itemView.getResources().getColor(R.color.black));
         }
 
-        // Set click listener
         holder.itemView.setOnClickListener(v -> dateClickListener.onDateClick(date));
     }
 
